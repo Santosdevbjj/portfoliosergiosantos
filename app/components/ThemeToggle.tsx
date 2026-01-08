@@ -8,6 +8,13 @@ export default function ThemeToggle() {
   const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState<Theme>("light");
 
+  function applyTheme(nextTheme: Theme) {
+    const html = document.documentElement;
+    html.classList.toggle("dark", nextTheme === "dark");
+    localStorage.setItem("theme", nextTheme);
+    setTheme(nextTheme);
+  }
+
   // Executa SOMENTE no cliente, após hidratação
   useEffect(() => {
     setMounted(true);
@@ -17,21 +24,24 @@ export default function ThemeToggle() {
       "(prefers-color-scheme: dark)"
     ).matches;
 
-    const initialTheme = storedTheme ?? (prefersDark ? "dark" : "light");
+    const initialTheme: Theme =
+      storedTheme ?? (prefersDark ? "dark" : "light");
 
-    setTheme(initialTheme);
-    document.documentElement.classList.toggle(
-      "dark",
-      initialTheme === "dark"
-    );
+    applyTheme(initialTheme);
+
+    function handleStorageChange(event: StorageEvent) {
+      if (event.key === "theme" && event.newValue) {
+        applyTheme(event.newValue as Theme);
+      }
+    }
+
+    window.addEventListener("storage", handleStorageChange);
+    return () =>
+      window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   function toggleTheme() {
-    const nextTheme: Theme = theme === "dark" ? "light" : "dark";
-
-    setTheme(nextTheme);
-    localStorage.setItem("theme", nextTheme);
-    document.documentElement.classList.toggle("dark", nextTheme === "dark");
+    applyTheme(theme === "dark" ? "light" : "dark");
   }
 
   // Evita hydration mismatch

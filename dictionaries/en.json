@@ -23,14 +23,8 @@
     "rights": "All rights reserved.",
     "contact": "Contact"
   },
-  "cta": {
-    "hireMe": "Hire Me",
-    "downloadCV": "Download CV"
-  },
-  "sections": {
-    "skills": "Skills",
-    "experience": "Experience",
-    "featuredProjects": "Featured Projects",
-    "testimonials": "Testimonials"
+  "theme": {
+    "themeLight": "Light Mode",
+    "themeDark": "Dark Mode"
   }
 }

@@ -21,6 +21,16 @@
   },
   "footer": {
     "rights": "Todos os direitos reservados.",
-    "contacto": "Contato"
+    "contact": "Contato"
+  },
+  "cta": {
+    "hireMe": "Contrate-me",
+    "downloadCV": "Baixar CV"
+  },
+  "sections": {
+    "skills": "Habilidades",
+    "experience": "Experiência",
+    "featuredProjects": "Projetos em Destaque",
+    "testimonials": "Depoimentos"
   }
 }

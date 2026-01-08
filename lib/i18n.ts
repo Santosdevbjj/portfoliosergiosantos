@@ -16,7 +16,7 @@ export const TECHNOLOGY_ORDER = [
 ];
 
 const dictionaries: Record<string, () => Promise<any>> = {
-  // O @ aponta para a raiz do projeto, evitando erros de "../"
+  // Usando @ para garantir que ele ache a pasta na raiz
   en: () => import("@/dictionaries/en.json").then((module) => module.default),
   pt: () => import("@/dictionaries/pt.json").then((module) => module.default),
 };

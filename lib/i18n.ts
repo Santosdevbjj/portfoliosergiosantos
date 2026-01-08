@@ -1,5 +1,9 @@
 // lib/i18n.ts
 
+/**
+ * Ordem fixa das tecnologias para renderização das seções do portfólio
+ * Tipada como literal para garantir consistência
+ */
 export const TECHNOLOGY_ORDER = [
   "ciencia-de-dados",
   "azure-databricks",
@@ -19,14 +23,14 @@ export const TECHNOLOGY_ORDER = [
 
 /**
  * Tipagem do dicionário de tradução
- * Garante segurança de acesso no page.tsx
+ * Agora as categorias são tipadas com base em TECHNOLOGY_ORDER
  */
 export type Dictionary = {
   portfolio: {
     title: string;
     description: string;
   };
-  categories: Record<string, string>;
+  categories: Record<(typeof TECHNOLOGY_ORDER)[number], string>;
 };
 
 /**
@@ -47,8 +51,20 @@ const dictionaries: Record<Locale, () => Promise<Dictionary>> = {
 
 /**
  * Retorna o dicionário correto com fallback seguro
+ * - Se o locale não for suportado, cai para 'pt'
+ * - Loga um aviso para facilitar debug
  */
 export async function getDictionary(locale: string): Promise<Dictionary> {
-  const safeLocale: Locale = locale === "en" ? "en" : "pt";
+  const supportedLocales: Locale[] = ["pt", "en"];
+  const safeLocale: Locale = supportedLocales.includes(locale as Locale)
+    ? (locale as Locale)
+    : "pt";
+
+  if (!supportedLocales.includes(locale as Locale)) {
+    console.warn(
+      `Idioma não suportado: "${locale}". Usando fallback para 'pt'.`
+    );
+  }
+
   return dictionaries[safeLocale]();
 }

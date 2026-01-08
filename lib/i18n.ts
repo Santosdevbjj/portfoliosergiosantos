@@ -1,70 +1,116 @@
 // lib/i18n.ts
 
 /**
- * Ordem fixa das tecnologias para renderização das seções do portfólio
- * Tipada como literal para garantir consistência
- */
-export const TECHNOLOGY_ORDER = [
-  "ciencia-de-dados",
-  "azure-databricks",
-  "neo4j",
-  "power-bi",
-  "banco-de-dados",
-  "python",
-  "dotnet",
-  "java",
-  "machine-learning",
-  "aws",
-  "ciberseguranca",
-  "logica-de-programacao",
-  "html",
-  "artigos-tecnicos",
-] as const;
-
-/**
- * Tipagem do dicionário de tradução
- * Agora as categorias são tipadas com base em TECHNOLOGY_ORDER
- */
-export type Dictionary = {
-  portfolio: {
-    title: string;
-    description: string;
-  };
-  categories: Record<(typeof TECHNOLOGY_ORDER)[number], string>;
-};
-
-/**
  * Idiomas suportados
  */
 export type Locale = "pt" | "en";
+export const SUPPORTED_LOCALES: Locale[] = ["pt", "en"];
+export const DEFAULT_LOCALE: Locale = "pt";
 
 /**
- * Loaders de dicionário por idioma
+ * Tipagem das traduções
  */
-const dictionaries: Record<Locale, () => Promise<Dictionary>> = {
-  en: async () =>
-    (await import("@/dictionaries/en.json")).default as Dictionary,
-
-  pt: async () =>
-    (await import("@/dictionaries/pt.json")).default as Dictionary,
+export type Translations = {
+  navigation: {
+    home: string;
+    about: string;
+    projects: string;
+    contact: string;
+    language: string;
+  };
+  footer: {
+    rights: string;
+  };
+  darkMode: {
+    lightMode: string;
+    darkMode: string;
+  };
+  sections: {
+    aboutTitle: string;
+    experienceTitle: string;
+    reskillingTitle: string;
+    differentialTitle: string;
+    objectiveTitle: string;
+    projectsTitle: string;
+    articlesTitle: string;
+    stackConsolidated: string;
+    stackUpdating: string;
+  };
 };
 
 /**
- * Retorna o dicionário correto com fallback seguro
- * - Se o locale não for suportado, cai para 'pt'
- * - Loga um aviso para facilitar debug
+ * Traduções inline
  */
-export async function getDictionary(locale: string): Promise<Dictionary> {
-  const supportedLocales: Locale[] = ["pt", "en"];
-  const safeLocale: Locale = supportedLocales.includes(locale as Locale)
-    ? (locale as Locale)
-    : "pt";
+export const translations: Record<Locale, Translations> = {
+  pt: {
+    navigation: {
+      home: "Início",
+      about: "Sobre",
+      projects: "Projetos",
+      contact: "Contato",
+      language: "Idioma",
+    },
+    footer: {
+      rights: "Todos os direitos reservados",
+    },
+    darkMode: {
+      lightMode: "Modo Claro",
+      darkMode: "Modo Escuro",
+    },
+    sections: {
+      aboutTitle: "👨‍💻 Sobre mim",
+      experienceTitle: "💼 Experiência Técnica",
+      reskillingTitle: "📚 Transição e Reskilling",
+      differentialTitle: "⭐ Diferencial",
+      objectiveTitle: "🎯 Objetivo",
+      projectsTitle: "🛠 Projetos em Destaque",
+      articlesTitle: "📝 Artigos em Destaque",
+      stackConsolidated: "Stack consolidado",
+      stackUpdating: "Stack em atualização",
+    },
+  },
+  en: {
+    navigation: {
+      home: "Home",
+      about: "About",
+      projects: "Projects",
+      contact: "Contact",
+      language: "Language",
+    },
+    footer: {
+      rights: "All rights reserved",
+    },
+    darkMode: {
+      lightMode: "Light Mode",
+      darkMode: "Dark Mode",
+    },
+    sections: {
+      aboutTitle: "👨‍💻 About Me",
+      experienceTitle: "💼 Technical Experience",
+      reskillingTitle: "📚 Transition & Reskilling",
+      differentialTitle: "⭐ Differential",
+      objectiveTitle: "🎯 Objective",
+      projectsTitle: "🛠 Featured Projects",
+      articlesTitle: "📝 Featured Articles",
+      stackConsolidated: "Consolidated Stack",
+      stackUpdating: "Stack in Evolution",
+    },
+  },
+};
 
-  if (!supportedLocales.includes(locale as Locale)) {
+/**
+ * Helper para obter traduções com fallback seguro
+ */
+export function getTranslation(locale: string): Translations {
+  const safeLocale: Locale = SUPPORTED_LOCALES.includes(locale as Locale)
+    ? (locale as Locale)
+    : DEFAULT_LOCALE;
+
+  if (!SUPPORTED_LOCALES.includes(locale as Locale)) {
     console.warn(
-      `Idioma não suportado: "${locale}". Usando fallback para 'pt'.`
+      `[i18n] Locale "${locale}" não suportado. Usando fallback "${DEFAULT_LOCALE}".`
     );
   }
 
-  return dictionaries[safeLocale]();
+  return translations[safeLocale];
 }

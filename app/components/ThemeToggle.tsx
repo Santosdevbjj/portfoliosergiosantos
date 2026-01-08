@@ -1,16 +1,26 @@
 "use client";
 
-import { useTheme } from "next-themes";
-
 export default function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.classList.contains("dark");
+
+    if (isDark) {
+      html.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    } else {
+      html.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    }
+  }
 
   return (
     <button
-      className="p-2"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      onClick={toggleTheme}
+      className="p-2 text-xl"
+      aria-label="Toggle Dark Mode"
     >
-      {theme === "dark" ? "🌞" : "🌙"}
+      🌙 / ☀️
     </button>
   );
 }

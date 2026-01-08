@@ -1,11 +1,8 @@
-import type { Metadata } from "next";
-import { ReactNode } from "react";
-
 import "./globals.css";
 import Header from "./components/Header";
 import ThemeToggle from "./components/ThemeToggle";
 
-export const metadata: Metadata = {
+export const metadata = {
   title: "Sérgio Santos | Analytics Engineer",
   description: "Portfólio de Analytics Engineering e Ciência de Dados",
 };
@@ -13,35 +10,11 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: {
-  children: ReactNode;
+  children: React.ReactNode;
 }) {
   return (
     <html lang="pt-BR">
-      <head>
-        {/* Script para evitar o flash de cor branca no dark mode */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                if (
-                  localStorage.theme === 'dark' ||
-                  (!('theme' in localStorage) &&
-                    window.matchMedia('(prefers-color-scheme: dark)').matches)
-                ) {
-                  document.documentElement.classList.add('dark');
-                } else {
-                  document.documentElement.classList.remove('dark');
-                }
-              } catch (_) {}
-            `,
-          }}
-        />
-      </head>
-
-      <body
-        suppressHydrationWarning
-        className="bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors min-h-screen flex flex-col"
-      >
+      <body className="bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors min-h-screen flex flex-col">
         <Header />
 
         <div className="flex justify-end px-4 py-2">

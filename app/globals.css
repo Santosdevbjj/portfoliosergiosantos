@@ -2,152 +2,92 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== Fonte variável Inter Variable ===== */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
-/* ===== Reset e base ===== */
 html,
 body {
   margin: 0;
   padding: 0;
-  scroll-behavior: smooth;
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
     'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
   line-height: 1.6;
-  color: #1f2937;
-  background-color: #ffffff;
-  transition: background-color 0.3s, color 0.3s;
+  transition: background 0.6s ease, color 0.6s ease;
+  color: #f0f0f0;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
 }
 
-/* ===== Dark mode global ===== */
+/* Dark mode com gradiente animado */
 body.dark {
-  color: #f9fafb;
-  background-color: #111827;
+  background: linear-gradient(135deg, #0f172a, #1e293b, #111827, #1e3a8a);
+  background-size: 400% 400%;
+  animation: gradientBackground 15s ease infinite;
+  color: #e0e7ff;
 }
 
-/* ===== Tipografia fluida com clamp() ===== */
-h1 {
-  font-weight: 700;
-  line-height: 1.2;
-  font-size: clamp(2rem, 5vw, 3rem); /* 32px → 48px */
-  background: linear-gradient(90deg, #3b82f6, #06b6d4);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+@keyframes gradientBackground {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-h2 {
-  font-weight: 600;
-  line-height: 1.25;
-  font-size: clamp(1.5rem, 4vw, 2.5rem); /* 24px → 40px */
-  background: linear-gradient(90deg, #6366f1, #ec4899);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* Tipografia fluida */
+h1 { font-weight: 900; font-size: clamp(2.5rem, 6vw, 4rem); line-height: 1.1; background: linear-gradient(270deg, #3b82f6, #06b6d4, #6366f1, #ec4899); background-size: 400% 400%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: textGradient 10s ease infinite;}
+h2 { font-weight: 700; font-size: clamp(1.75rem, 5vw, 3rem); line-height: 1.2; background: linear-gradient(270deg, #06b6d4, #3b82f6, #f472b6); background-size: 400% 400%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: textGradient 12s ease infinite;}
+h3 { font-weight: 600; font-size: clamp(1.25rem, 4vw, 2rem); line-height: 1.3; color: inherit;}
+p { font-size: clamp(1rem, 2.5vw, 1.125rem); line-height: 1.6; margin-bottom: 1em;}
+
+@keyframes textGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-h3 {
-  font-weight: 600;
-  line-height: 1.3;
-  font-size: clamp(1.25rem, 3vw, 2rem); /* 20px → 32px */
-  color: inherit;
-}
-
-p {
-  font-size: clamp(1rem, 2.5vw, 1.125rem); /* 16px → 18px */
-  line-height: 1.6;
-  margin-bottom: 1em;
-}
-
-/* ===== Links ===== */
 a {
-  @apply transition-colors duration-300 font-medium;
+  @apply transition-colors duration-500 font-semibold relative;
   color: #3b82f6;
 }
-a:hover {
-  color: #06b6d4;
-  text-decoration: underline;
+a::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  left: 0;
+  bottom: -2px;
+  background: linear-gradient(90deg, #06b6d4, #3b82f6);
+  transition: transform 0.3s ease;
+  transform: scaleX(0);
+  transform-origin: right;
 }
+a:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+a:hover { color: #06b6d4; }
 
-/* ===== Botões premium ===== */
 button {
-  @apply cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg font-semibold px-4 py-2 transition-all duration-300 transform;
-  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  @apply cursor-pointer focus:outline-none rounded-lg font-semibold px-5 py-3 transition-transform duration-300 transform shadow-lg;
+  background: linear-gradient(135deg, #3b82f6, #06b6d4, #6366f1, #f472b6);
+  background-size: 400% 400%;
   color: #fff;
+  animation: buttonGradient 8s ease infinite;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  transform: scale(1.08);
+  box-shadow: 0 12px 25px rgba(59,130,246,0.4);
+}
+@keyframes buttonGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-/* ===== Listas ===== */
-ul, ol {
-  @apply list-inside sm:list-inside;
-  margin-bottom: 1em;
-}
+img { @apply max-w-full h-auto rounded-xl transition-transform duration-300 shadow-md; }
+img:hover { transform: scale(1.03) rotate(0.5deg); filter: drop-shadow(0 8px 20px rgba(0,0,0,0.25)); }
 
-/* ===== Imagens ===== */
-img {
-  @apply max-w-full h-auto rounded-lg transition-transform duration-300;
-}
-img:hover {
-  transform: scale(1.02);
-}
+input, select, textarea { @apply border border-gray-600 dark:border-gray-500 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full transition-all duration-300; background-color: rgba(255,255,255,0.05); color: inherit; }
+input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.6); }
 
-/* ===== Tables ===== */
-table {
-  @apply border-collapse w-full mb-6;
-}
-th, td {
-  @apply border border-gray-300 dark:border-gray-700 p-3 text-left;
-}
-
-/* ===== Forms ===== */
-input, select, textarea {
-  @apply border border-gray-300 dark:border-gray-700 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full;
-}
-
-/* ===== Containers responsivos ===== */
-.container {
-  @apply max-w-4xl mx-auto px-4 sm:px-6 lg:px-8;
-}
-
-/* ===== Seções e espaçamento ===== */
-section {
-  margin-bottom: 2.5rem;
-}
-
-/* ===== Cabeçalhos ===== */
-h1, h2, h3 {
-  margin-top: 0;
-  margin-bottom: 0.5em;
-}
-
-/* ===== Responsive adjustments ===== */
-@media (max-width: 640px) {
-  body {
-    font-size: 16px;
-  }
-}
-@media (min-width: 768px) {
-  body {
-    font-size: 18px;
-  }
-}
-@media (min-width: 1024px) {
-  body {
-    font-size: 20px;
-  }
-}
-
-/* ===== Scrollbar customizada (opcional) ===== */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-thumb {
-  background-color: rgba(59, 130, 246, 0.5);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(59, 130, 246, 0.7);
-}
+section { margin-bottom: 3rem; }
+.container { @apply max-w-5xl mx-auto px-4 sm:px-6 lg:px-8; }

@@ -13,7 +13,10 @@ export default function ProjectSection({ techKey, repos, dict, lang }: Props) {
   if (!repos || repos.length === 0) return null;
 
   // Obtém título traduzido diretamente do dicionário
-  const title = dict.categories?.[techKey] ?? techKey.replace(/-/g, ' ');
+  const title = dict.categories?.[techKey];
+
+  // Se não houver tradução no dicionário, não renderiza a seção
+  if (!title) return null;
 
   return (
     <section
@@ -26,7 +29,7 @@ export default function ProjectSection({ techKey, repos, dict, lang }: Props) {
       </h2>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {repos.map((repo) => (
-          <ProjectCard key={repo.id} repo={repo} />
+          <ProjectCard key={repo.id} repo={repo} dict={dict} lang={lang} />
         ))}
       </div>
     </section>

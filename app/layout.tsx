@@ -9,37 +9,16 @@ export const metadata: Metadata = {
   description: "Portfólio de Analytics Engineering e Ciência de Dados",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body
-        suppressHydrationWarning
-        className="
-          min-h-screen flex flex-col
-          transition-colors duration-300
-          bg-white text-gray-900
-          dark:bg-gray-900 dark:text-gray-100
-        "
-      >
-        {/* Header (Client Component) */}
+      <body className="min-h-screen flex flex-col transition-colors duration-500 bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100">
         <Header />
-
-        {/* Toggle de tema */}
-        <div className="flex justify-end px-4 sm:px-6 lg:px-8 py-2">
+        <div className="flex justify-end px-4 py-2">
           <ThemeToggle />
         </div>
-
-        {/* Conteúdo principal */}
-        <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          {children}
-        </main>
-
-        {/* Footer (Server Component) */}
-        <footer className="flex-shrink-0 text-center text-sm p-8 border-t border-gray-200 dark:border-gray-800">
+        <main className="flex-grow container mx-auto px-4 py-6">{children}</main>
+        <footer className="text-center text-sm p-8 border-t border-gray-200 dark:border-gray-800">
           © {new Date().getFullYear()} Sérgio Santos
         </footer>
       </body>

@@ -1,57 +1,94 @@
-import { notFound } from 'next/navigation';
-import { getPortfolioRepos, GitHubRepo } from '@/lib/github';
-import { getDictionary, TECHNOLOGY_ORDER } from '@/lib/i18n';
-import ProjectSection from '../components/ProjectSection';
-import PageWrapper from '../components/PageWrapper';
+import PageWrapper from "@/components/PageWrapper";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import ProjectSection from "@/components/ProjectSection";
+import { translations } from "@/lib/i18n";
+import { getPortfolioRepos } from "@/lib/github";
 
-interface PageProps {
-  params: { lang: string };
+interface Props {
+  params: { lang: "pt" | "en" };
 }
 
-const SUPPORTED_LANGS = ['pt', 'en'] as const;
-
-export default async function Page({ params }: PageProps) {
-  const { lang } = params;
-
-  if (!SUPPORTED_LANGS.includes(lang as any)) {
-    notFound();
-  }
-
-  const [repos, dict] = await Promise.all([getPortfolioRepos(), getDictionary(lang)]);
+export default async function Page({ params }: Props) {
+  const t = translations[params.lang];
+  const repos = await getPortfolioRepos();
 
   return (
     <PageWrapper>
-      <section
-        lang={lang === "en" ? "en-US" : "pt-BR"}
-        aria-label={lang === "en" ? "Portfolio projects" : "Projetos do portfólio"}
-        className="container mx-auto px-4 lg:px-8 py-8 sm:py-12 space-y-6 sm:space-y-8"
-      >
-        <header className="space-y-4">
-          <h1 className="font-bold text-[clamp(2rem,3vw+1rem,4rem)] text-gray-900 dark:text-gray-100">
-            {dict.portfolio.title}
+      <Header lang={params.lang} />
+      <main className="flex-1 p-4 max-w-7xl mx-auto">
+        {/* Sobre mim */}
+        <section className="mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
+            {t.sections.aboutTitle}
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 max-w-3xl text-[clamp(1rem,2.5vw,1.25rem)] leading-relaxed">
-            {dict.portfolio.description}
+          <p className="text-base sm:text-lg md:text-xl">
+            {t.sections.aboutIntro}
           </p>
-        </header>
+          <p className="mt-2 text-sm sm:text-base md:text-lg">
+            {t.sections.aboutDetails}
+          </p>
+        </section>
 
-        {TECHNOLOGY_ORDER.map((tech) => {
-          const filteredRepos = repos.filter((r: GitHubRepo) => r.topics?.includes(tech));
-          if (!filteredRepos.length) return null;
+        {/* Experiência Técnica */}
+        <section className="mb-8">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4">
+            {t.sections.experienceTitle}
+          </h2>
+          <ul className="list-disc list-inside space-y-2 text-sm sm:text-base md:text-lg">
+            <li>
+              Sistema automatizado de IPVA eliminando{" "}
+              <strong>2.920 horas anuais</strong> de processamento manual
+            </li>
+            <li>
+              Infraestrutura de rede corporativa para 500+ usuários com{" "}
+              <strong>99,5% de disponibilidade</strong>
+            </li>
+            <li>
+              Sistemas jurídicos interdepartamentais com rastreabilidade completa
+              e conformidade LGPD
+            </li>
+          </ul>
+          <p className="mt-2 text-sm sm:text-base md:text-lg">
+            <strong>{t.sections.stackConsolidated}:</strong> Visual Basic, C,
+            SQL Server, Windows Server, Emulação Mainframe IBM, Active Directory
+          </p>
+          <p className="mt-1 text-sm sm:text-base md:text-lg">
+            <strong>{t.sections.stackUpdating}:</strong> Java, C#/.NET, Python,
+            Azure Databricks, Azure AI, Power BI, Machine Learning, Docker,
+            Neo4J
+          </p>
+        </section>
 
-          const fallbackTitle = tech
-            .replace(/-/g, ' ')
-            .replace(/\b\w/g, (c) => c.toUpperCase());
+        {/* Projetos */}
+        <section className="mb-8">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4">
+            {t.sections.projectsTitle}
+          </h2>
+          {Object.entries(repos).map(([cat, projects]) => (
+            <ProjectSection key={cat} title={cat} projects={projects} />
+          ))}
+        </section>
 
-          return (
-            <ProjectSection
-              key={tech}
-              title={dict.categories?.[tech] ?? fallbackTitle}
-              repos={filteredRepos}
-            />
-          );
-        })}
-      </section>
+        {/* Artigos em destaque */}
+        <section className="mb-8">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4">
+            {t.sections.articlesTitle}
+          </h2>
+          <ul className="list-disc list-inside space-y-2 text-sm sm:text-base md:text-lg">
+            <li>
+              <a
+                href="https://github.com/Santosdevbjj/myArticles/blob/main/artigos/low_code/low_code_saude.md"
+                target="_blank"
+                className="text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                Low-Code na Saúde: Como Criar Apps Médicos em Semanas 🏆
+              </a>
+            </li>
+          </ul>
+        </section>
+      </main>
+      <Footer lang={params.lang} dict={t} />
     </PageWrapper>
   );
 }

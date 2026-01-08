@@ -1,28 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getDictionary } from "@/lib/i18n"; // importa dicionário multilíngue
-import type { Lang } from "@/lib/i18n/config";
+import { translations } from "@/lib/i18n";
 
-interface DarkModeToggleProps {
-  lang: Lang;
+interface Props {
+  lang: "pt" | "en";
 }
 
-export default function DarkModeToggle({ lang }: DarkModeToggleProps) {
+export default function DarkModeToggle({ lang }: Props) {
   const [dark, setDark] = useState(false);
-  const [dict, setDict] = useState<{ lightMode: string; darkMode: string }>({
-    lightMode: "Light Mode",
-    darkMode: "Dark Mode",
-  });
-
-  // Carrega traduções do dicionário
-  useEffect(() => {
-    getDictionary(lang).then((d) => {
-      setDict({
-        lightMode: d.lightMode ?? "Light Mode",
-        darkMode: d.darkMode ?? "Dark Mode",
-      });
-    });
-  }, [lang]);
 
   // Inicializa tema com base no localStorage
   useEffect(() => {
@@ -53,16 +38,17 @@ export default function DarkModeToggle({ lang }: DarkModeToggleProps) {
         text-sm sm:text-base font-medium
         hover:bg-gray-300 dark:hover:bg-gray-600
       "
-      aria-label={dark ? dict.lightMode : dict.darkMode}
+      aria-label={dark ? translations[lang].lightMode : translations[lang].darkMode}
+      title={dark ? translations[lang].lightMode : translations[lang].darkMode}
     >
       {/* Ícone sempre visível */}
-      <span className="text-lg sm:text-xl mr-2">
+      <span className="text-base sm:text-lg md:text-xl mr-2">
         {dark ? "☀️" : "🌙"}
       </span>
 
       {/* Texto visível apenas em telas médias ou maiores */}
       <span className="hidden sm:inline">
-        {dark ? dict.lightMode : dict.darkMode}
+        {dark ? translations[lang].lightMode : translations[lang].darkMode}
       </span>
     </button>
   );

@@ -6,11 +6,8 @@ import { usePathname } from "next/navigation";
 type Lang = "pt" | "en";
 
 export default function Header() {
-  const pathname = usePathname() ?? "/";
-
-  const currentLang: Lang = pathname === "/en" || pathname.startsWith("/en/")
-    ? "en"
-    : "pt";
+  const pathname = usePathname() ?? "";
+  const currentLang: Lang = pathname.startsWith("/en") ? "en" : "pt";
 
   const getLinkStyle = (lang: Lang) => {
     const base =
@@ -28,11 +25,10 @@ export default function Header() {
   return (
     <header className="bg-gray-100 dark:bg-gray-800 shadow-sm">
       <nav
-        className="max-w-4xl mx-auto flex justify-between items-center p-4"
-        role="navigation"
+        className="max-w-4xl mx-auto flex flex-wrap justify-between items-center p-4"
         aria-label="Language navigation"
       >
-        <div className="flex space-x-2">
+        <div className="flex flex-wrap gap-2">
           <Link
             href="/pt"
             className={getLinkStyle("pt")}
@@ -50,7 +46,7 @@ export default function Header() {
           </Link>
         </div>
 
-        <span className="text-xs uppercase tracking-widest font-medium text-gray-500 dark:text-gray-400">
+        <span className="text-xs uppercase tracking-widest font-medium text-gray-500 dark:text-gray-400 mt-2 sm:mt-0">
           {currentLang === "en" ? "International" : "Brasil"}
         </span>
       </nav>

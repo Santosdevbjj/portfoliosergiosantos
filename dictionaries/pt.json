@@ -23,6 +23,10 @@
     "rights": "Todos os direitos reservados.",
     "contact": "Contato"
   },
+  "theme": {
+    "themeLight": "Modo Claro",
+    "themeDark": "Modo Escuro"
+  },
   "cta": {
     "hireMe": "Contrate-me",
     "downloadCV": "Baixar CV"

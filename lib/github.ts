@@ -14,61 +14,77 @@ export type GitHubRepo = {
 const DEFAULT_USER = "Santosdevbjj";
 
 /**
- * Monta a URL da API do GitHub para buscar repositórios de um usuário
+ * Categorias fixas para organizar os repositórios
  */
-function buildApiUrl(user: string): string {
-  return `https://api.github.com/users/${user}/repos?per_page=100`;
-}
+export const CATEGORIES_ORDER = [
+  "ciencia-de-dados",
+  "azure-databricks",
+  "neo4j",
+  "power-bi",
+  "database",
+  "python",
+  "csharp",
+  "dotnet",
+  "java",
+  "machine-learning",
+  "amazon-aws",
+  "cybersecurity",
+  "logica-de-programacao",
+  "html",
+  "articles",
+] as const;
+
+export type Category = (typeof CATEGORIES_ORDER)[number];
 
 /**
- * Busca repositórios públicos do GitHub marcados como "portfolio"
- * - Executa no servidor com cache (ISR)
- * - Trata rate limit e erros de API
- * - Ordena resultados por data de atualização (mais recentes primeiro)
+ * Busca e categoriza repositórios do GitHub
  */
 export async function getPortfolioRepos(
-  user: string = DEFAULT_USER
-): Promise<GitHubRepo[]> {
+  user: string = DEFAULT_USER,
+  mainTopic: string = "portfolio"
+): Promise<Record<Category, GitHubRepo[]>> {
   try {
-    const res = await fetch(buildApiUrl(user), {
-      headers: {
-        Accept: "application/vnd.github+json", // header atualizado
-      },
+    const res = await fetch(`https://api.github.com/users/${user}/repos?per_page=100`, {
+      headers: { Accept: "application/vnd.github+json" },
       next: { revalidate: 3600 }, // cache de 1 hora
     });
 
     if (!res.ok) {
-      if (res.status === 403) {
-        console.error("GitHub API rate limit exceeded. Tente novamente mais tarde.");
-      } else {
-        console.error("GitHub API error:", res.status, res.statusText);
-      }
-      return [];
+      console.error("GitHub API error:", res.status, res.statusText);
+      return {} as Record<Category, GitHubRepo[]>;
     }
 
     const repos: GitHubRepo[] = await res.json();
 
-    return repos
-      .filter(
-        (repo) =>
-          Array.isArray(repo.topics) &&
-          repo.topics.includes("portfolio")
-      )
-      .map((repo) => ({
-        ...repo,
-        description: repo.description ?? "",
-        topics: repo.topics ?? [],
-        language: repo.language ?? undefined,
-        stargazers_count: repo.stargazers_count ?? 0,
-        updated_at: repo.updated_at ?? undefined,
-      }))
-      .sort((a, b) => {
-        const dateA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
-        const dateB = b.updated_at ? new Date(b.updated_at).getTime() : 0;
-        return dateB - dateA; // mais recentes primeiro
-      });
+    // Filtra apenas repositórios com o tópico principal
+    const portfolioRepos = repos.filter((repo) =>
+      Array.isArray(repo.topics) && repo.topics.includes(mainTopic)
+    );
+
+    // Categoriza conforme ordem fixa
+    const categorized: Record<Category, GitHubRepo[]> = {} as Record<Category, GitHubRepo[]>;
+
+    CATEGORIES_ORDER.forEach((cat) => {
+      categorized[cat] = portfolioRepos
+        .filter((r) => r.topics?.includes(cat))
+        .map((r) => ({
+          ...r,
+          description: r.description ?? "",
+          topics: r.topics ?? [],
+          language: r.language ?? undefined,
+          stargazers_count: r.stargazers_count ?? 0,
+          updated_at: r.updated_at ?? undefined,
+        }))
+        .sort((a, b) => {
+          const dateA = a.updated_at ? Date.parse(a.updated_at) : 0;
+          const dateB = b.updated_at ? Date.parse(b.updated_at) : 0;
+          return dateB - dateA; // mais recentes primeiro
+        });
+    });
+
+    return categorized;
   } catch (error) {
     console.error("Failed to fetch GitHub repos:", error);
-    return [];
+    return {} as Record<Category, GitHubRepo[]>;
   }
 }

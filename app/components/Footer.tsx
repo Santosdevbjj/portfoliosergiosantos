@@ -2,8 +2,21 @@
 
 import Link from "next/link";
 import LanguageSwitcher from "./LanguageSwitcher";
+import type { Lang } from "@/lib/i18n/config";
 
-export default function Footer() {
+interface FooterProps {
+  dict: {
+    home: string;
+    about: string;
+    projects: string;
+    contact: string;
+    language: string;
+    rights: string; // ex.: "Todos os direitos reservados" / "All rights reserved"
+  };
+  lang: Lang;
+}
+
+export default function Footer({ dict, lang }: FooterProps) {
   return (
     <footer
       className="w-full border-t border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-700"
@@ -14,7 +27,7 @@ export default function Footer() {
           
           {/* Logo / Nome */}
           <div className="flex items-center space-x-2">
-            <Link href="/" className="flex items-center">
+            <Link href={`/${lang}`} className="flex items-center">
               <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
                 Sergio Santos
               </span>
@@ -22,30 +35,36 @@ export default function Footer() {
           </div>
 
           {/* Navegação secundária */}
-          <nav className="flex space-x-6">
+          <nav className="flex flex-wrap justify-center space-x-6">
             <Link
-              href="/about"
+              href={`/${lang}`}
               className="text-sm font-medium text-gray-700 hover:text-indigo-600 dark:text-gray-200 dark:hover:text-indigo-400"
             >
-              About
+              {dict.home}
             </Link>
             <Link
-              href="/projects"
+              href={`/${lang}/about`}
               className="text-sm font-medium text-gray-700 hover:text-indigo-600 dark:text-gray-200 dark:hover:text-indigo-400"
             >
-              Projects
+              {dict.about}
             </Link>
             <Link
-              href="/contact"
+              href={`/${lang}/projects`}
               className="text-sm font-medium text-gray-700 hover:text-indigo-600 dark:text-gray-200 dark:hover:text-indigo-400"
             >
-              Contact
+              {dict.projects}
+            </Link>
+            <Link
+              href={`/${lang}/contact`}
+              className="text-sm font-medium text-gray-700 hover:text-indigo-600 dark:text-gray-200 dark:hover:text-indigo-400"
+            >
+              {dict.contact}
             </Link>
           </nav>
 
           {/* Ações à direita (Language Switcher + redes sociais) */}
           <div className="flex items-center space-x-4">
-            <LanguageSwitcher />
+            <LanguageSwitcher lang={lang} dict={dict} />
 
             {/* Links sociais */}
             <div className="flex space-x-3">
@@ -107,7 +126,7 @@ export default function Footer() {
 
         {/* Copyright */}
         <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-          © {new Date().getFullYear()} Sergio Santos. All rights reserved.
+          © {new Date().getFullYear()} Sergio Santos. {dict.rights}
         </div>
       </div>
     </footer>

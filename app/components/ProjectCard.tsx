@@ -6,19 +6,12 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ repo }: ProjectCardProps) {
   return (
-    <article className="
-      border border-gray-200 dark:border-gray-700 rounded-xl p-6
-      bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700
-      shadow-md hover:shadow-2xl
-      transition-transform duration-500 transform hover:-translate-y-1
-      hover:scale-105
-      flex flex-col justify-between
-    ">
-      <h3 className="text-lg sm:text-xl md:text-2xl font-semibold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 animate-textGradient">
+    <article className="border rounded-2xl p-6 transition-shadow duration-300 hover:shadow-2xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 hover:scale-105">
+      <h3 className="text-lg sm:text-xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-primary-light via-accent to-secondary-light animate-textGradient">
         {repo.name}
       </h3>
 
-      <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4 flex-grow">
+      <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4">
         {repo.description || "Descrição não disponível."}
       </p>
 
@@ -26,13 +19,7 @@ export default function ProjectCard({ repo }: ProjectCardProps) {
         href={repo.html_url}
         target="_blank"
         rel="noopener noreferrer"
-        className="
-          inline-block px-4 py-2 rounded-lg
-          bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500
-          text-white font-medium shadow-lg
-          hover:scale-105 hover:shadow-2xl
-          transition-all duration-300
-        "
+        className="inline-block font-medium text-white bg-gradient-to-r from-primary-light to-primary-dark px-4 py-2 rounded-lg hover:from-secondary-light hover:to-accent transition-all duration-300 shadow-md"
       >
         Ver projeto →
       </a>

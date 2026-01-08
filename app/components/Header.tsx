@@ -16,16 +16,27 @@ export default function Header() {
 
   return (
     <header className="bg-gray-100 dark:bg-gray-900 shadow-sm">
-      <nav className="max-w-5xl mx-auto flex justify-between items-center p-4">
-        <div className="flex space-x-2">
-          <Link href="/pt" className={getLinkClass('pt')} aria-current={currentLang === 'pt' ? 'page' : undefined}>
+      <nav className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center p-4 gap-2 sm:gap-0">
+        {/* Links de idioma */}
+        <div className="flex space-x-2 sm:space-x-4">
+          <Link
+            href="/pt"
+            className={getLinkClass('pt')}
+            aria-current={currentLang === 'pt' ? 'page' : undefined}
+          >
             Português
           </Link>
-          <Link href="/en" className={getLinkClass('en')} aria-current={currentLang === 'en' ? 'page' : undefined}>
+          <Link
+            href="/en"
+            className={getLinkClass('en')}
+            aria-current={currentLang === 'en' ? 'page' : undefined}
+          >
             English
           </Link>
         </div>
-        <span className="text-xs uppercase tracking-widest font-medium text-gray-500 dark:text-gray-400">
+
+        {/* Texto adaptável */}
+        <span className="text-xs sm:text-sm uppercase tracking-widest font-medium text-gray-500 dark:text-gray-400 mt-2 sm:mt-0">
           {currentLang === 'en' ? 'International' : 'Brasil'}
         </span>
       </nav>

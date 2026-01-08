@@ -1,8 +1,10 @@
+import type { Metadata } from "next";
 import "./globals.css";
+
 import Header from "./components/Header";
 import ThemeToggle from "./components/ThemeToggle";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Sérgio Santos | Analytics Engineer",
   description: "Portfólio de Analytics Engineering e Ciência de Dados",
 };
@@ -13,18 +15,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR">
-      <body className="bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors min-h-screen flex flex-col">
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body
+        suppressHydrationWarning
+        className="min-h-screen flex flex-col transition-colors
+                   bg-white text-gray-900
+                   dark:bg-gray-900 dark:text-gray-100"
+      >
+        {/* Header é Client Component */}
         <Header />
 
+        {/* Toggle de tema isolado como Client Component */}
         <div className="flex justify-end px-4 py-2">
           <ThemeToggle />
         </div>
 
+        {/* Conteúdo principal */}
         <main className="flex-grow px-4 py-6">
           {children}
         </main>
 
+        {/* Footer permanece Server-side */}
         <footer className="text-center text-sm p-8 border-t dark:border-gray-800">
           © {new Date().getFullYear()} Sérgio Santos
         </footer>

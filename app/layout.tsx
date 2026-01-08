@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import enDict from "./dictionaries/en.json";
+import ptDict from "./dictionaries/pt.json";
 import { usePathname } from "next/navigation";
 
 // Metadados globais
@@ -20,6 +22,12 @@ function detectLang(pathname: string | null): string {
   return "en"; // fallback
 }
 
+// Hook para carregar o dicionário correto
+function useDictionary(pathname: string | null) {
+  const lang = detectLang(pathname);
+  return lang === "pt" ? ptDict : enDict;
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -27,20 +35,21 @@ export default function RootLayout({
 }) {
   const pathname = usePathname();
   const lang = detectLang(pathname);
+  const dictionary = useDictionary(pathname);
 
   return (
     <html lang={lang} className="scroll-smooth">
       <body className="flex min-h-screen flex-col bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100">
-        {/* Header fixo no topo */}
-        <Header />
+        {/* Header recebe dicionário */}
+        <Header dictionary={dictionary} />
 
         {/* Conteúdo principal responsivo */}
         <main className="flex-grow mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
           {children}
         </main>
 
-        {/* Footer fixo no final */}
-        <Footer />
+        {/* Footer recebe dicionário */}
+        <Footer dictionary={dictionary} />
       </body>
     </html>
   );

@@ -1,9 +1,6 @@
 import "./globals.css";
-
-export const metadata = {
-  title: "Portfólio | Sérgio Santos",
-  description: "Portfólio profissional de Engenharia de Dados",
-};
+import Header from "./components/Header";
+import ThemeToggle from "./components/ThemeToggle";
 
 export default function RootLayout({
   children,
@@ -12,7 +9,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body className="bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors">
+        <Header />
+        <div className="px-4 py-6">{children}</div>
+        <footer className="text-center text-sm p-4">
+          © {new Date().getFullYear()} Sérgio Santos
+        </footer>
+      </body>
     </html>
   );
 }

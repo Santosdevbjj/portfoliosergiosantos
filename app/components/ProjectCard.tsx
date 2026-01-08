@@ -1,38 +1,27 @@
 "use client";
-import { GitHubRepo } from "@/lib/github";
+
+import { GitHubRepo } from "../../lib/github";
 
 type Props = {
   repo: GitHubRepo;
 };
 
 export default function ProjectCard({ repo }: Props) {
-  const screenshotUrl = `https://opengraph.githubassets.com/1/${repo.html_url.replace(
-    "https://github.com/",
-    ""
-  )}`;
-
   return (
-    <div className="border rounded-xl overflow-hidden shadow-sm bg-white dark:bg-zinc-900">
-      <img
-        src={screenshotUrl}
-        alt={repo.name}
-        className="w-full h-40 object-cover"
-      />
+    <article className="border rounded-lg p-4 hover:shadow-md transition">
+      <h3 className="text-lg font-semibold">{repo.name}</h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        {repo.description}
+      </p>
 
-      <div className="p-4">
-        <h3 className="font-semibold text-lg mb-2">{repo.name}</h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-          {repo.description}
-        </p>
-
-        <a
-          href={repo.html_url}
-          target="_blank"
-          className="text-sm font-medium text-blue-600 hover:underline"
-        >
-          Ver no GitHub →
-        </a>
-      </div>
-    </div>
+      <a
+        href={repo.html_url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 hover:underline mt-2 inline-block"
+      >
+        Ver projeto →
+      </a>
+    </article>
   );
 }

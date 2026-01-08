@@ -10,19 +10,30 @@ export default function ProjectSection({
   title,
   repos,
 }: ProjectSectionProps) {
-  if (!repos || repos.length === 0) {
+  if (!Array.isArray(repos) || repos.length === 0) {
     return null;
   }
 
+  const sectionId = title.toLowerCase().replace(/\s+/g, "-");
+
   return (
-    <section className="mb-12">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">
+    <section
+      className="mb-12"
+      aria-labelledby={sectionId}
+    >
+      <h2
+        id={sectionId}
+        className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100"
+      >
         {title}
       </h2>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {repos.map((repo) => (
-          <ProjectCard key={repo.id} repo={repo} />
+          <ProjectCard
+            key={`${repo.id}-${repo.name}`}
+            repo={repo}
+          />
         ))}
       </div>
     </section>

@@ -2,21 +2,30 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Dictionary } from '@/lib/i18n';
 
-export default function Header() {
+interface Props {
+  dict: Dictionary;   // dicionário multilíngue carregado dinamicamente
+  lang: 'pt' | 'en';  // idioma atual
+}
+
+export default function Header({ dict, lang }: Props) {
   const pathname = usePathname() ?? '';
   const currentLang = pathname.startsWith('/en') ? 'en' : 'pt';
 
-  const getLinkClass = (lang: 'pt' | 'en') =>
+  const getLinkClass = (langKey: 'pt' | 'en') =>
     `px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 ${
-      currentLang === lang
+      currentLang === langKey
         ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold'
         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
     }`;
 
   return (
-    <header className="bg-gray-100 dark:bg-gray-900 shadow-sm">
-      <nav className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center p-4 gap-2 sm:gap-0">
+    <header
+      lang={currentLang === 'en' ? 'en-US' : 'pt-BR'}
+      className="bg-gray-100 dark:bg-gray-900 shadow-sm"
+    >
+      <nav className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center px-4 py-3 sm:py-4 gap-2 sm:gap-0 lg:px-8">
         {/* Links de idioma */}
         <div className="flex space-x-2 sm:space-x-4">
           <Link
@@ -24,20 +33,22 @@ export default function Header() {
             className={getLinkClass('pt')}
             aria-current={currentLang === 'pt' ? 'page' : undefined}
           >
-            Português
+            {dict.header?.portuguese ?? 'Português'}
           </Link>
           <Link
             href="/en"
             className={getLinkClass('en')}
             aria-current={currentLang === 'en' ? 'page' : undefined}
           >
-            English
+            {dict.header?.english ?? 'English'}
           </Link>
         </div>
 
         {/* Texto adaptável */}
-        <span className="text-xs sm:text-sm uppercase tracking-widest font-medium text-gray-500 dark:text-gray-400 mt-2 sm:mt-0">
-          {currentLang === 'en' ? 'International' : 'Brasil'}
+        <span className="text-[clamp(0.75rem,1vw,0.875rem)] uppercase tracking-widest font-medium text-gray-500 dark:text-gray-400 mt-2 sm:mt-0">
+          {currentLang === 'en'
+            ? dict.header?.international ?? 'International'
+            : dict.header?.brazil ?? 'Brasil'}
         </span>
       </nav>
     </header>

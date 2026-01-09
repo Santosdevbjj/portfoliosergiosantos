@@ -26,24 +26,18 @@ export type Translations = {
     darkMode: string;
   };
   sections: {
-    // Sobre / About
     aboutTitle: string;
     aboutIntro: string;
     aboutDetails: string;
-
-    // Experiência / Experience
     experienceTitle: string;
+    reskillingTitle: string;
+    differentialTitle: string;
+    objectiveTitle: string;
     stackConsolidated: string;
     stackUpdating: string;
-
-    // Projetos e artigos / Projects & articles
     projectsTitle: string;
     articlesTitle: string;
-
-    // Artigo vencedor / Featured article
     featuredArticle: string;
-
-    // Contato / Contact
     contactTitle: string;
   };
   featuredArticle: {
@@ -64,6 +58,9 @@ export type Translations = {
     item3: string;
     stackConsolidated: string;
     stackUpdating: string;
+    reskilling: string;
+    differential: string;
+    objective: string;
   };
   projectCategories: {
     dataScience: string;
@@ -105,10 +102,13 @@ export const translations: Record<Locale, Translations> = {
     sections: {
       aboutTitle: "👨‍💻 Sobre mim",
       aboutIntro:
-        "Seja bem-vindo(a). Sou um profissional com mais de 15 anos de experiência em sistemas de missão crítica no setor bancário, agora dedicando minha atuação a transformar dados em inteligência estratégica e suporte à tomada de decisão.",
+        "Analista de Ciência de Dados | Python | SQL | Azure Databricks | Eficiência Operacional e Governança de Dados",
       aboutDetails:
-        "Utilizo Python, Azure Databricks, SQL e Neo4J para desenvolver soluções de dados com rigor técnico, conformidade e foco em impacto direto no negócio.",
+        "Seja bem-vindo(a). Sou um profissional com mais de 15 anos de experiência em sistemas de missão crítica no setor bancário, agora dedicando minha atuação a transformar dados em inteligência estratégica e suporte à tomada de decisão.\n\nUtilizo um stack moderno baseado em Python, Azure Databricks, SQL e Neo4J para desenvolver soluções de dados com rigor técnico, conformidade e foco em impacto direto no negócio.",
       experienceTitle: "💼 Experiência Técnica",
+      reskillingTitle: "📚 Transição e Reskilling",
+      differentialTitle: "⭐ Diferencial",
+      objectiveTitle: "🎯 Objetivo",
       stackConsolidated: "Stack consolidado",
       stackUpdating: "Stack em atualização",
       projectsTitle: "🛠 Projetos em Destaque",
@@ -133,7 +133,7 @@ export const translations: Record<Locale, Translations> = {
     },
     experience: {
       item1:
-        "Sistema automatizado de IPVA eliminando 2.920 horas anuais de processamento manual",
+        "Sistema automatizado de IPVA que eliminou 2.920 horas anuais de processamento manual",
       item2:
         "Infraestrutura de rede corporativa para 500+ usuários com 99,5% de disponibilidade",
       item3:
@@ -141,7 +141,13 @@ export const translations: Record<Locale, Translations> = {
       stackConsolidated:
         "Visual Basic, C, SQL Server, Windows Server, Emulação Mainframe IBM, Active Directory",
       stackUpdating:
-        "Java, C#/.NET, Python, Azure Databricks, Azure AI, Power BI, Machine Learning, Docker, Neo4J",
+        "Java, C#/.NET, Python, Azure Databricks, Azure AI, Power BI, Machine Learning, Docker, Neo4J (bancos de dados de grafos)",
+      reskilling:
+        "Desde 2008 atuo como consultor independente enquanto invisto em atualização contínua através de bootcamps e certificações especializadas. Recentemente concluí formação em Ciência de Dados com Python e Neo4J para análise de dados com grafos — habilidade aplicável a cenários de detecção de fraudes, análise de relacionamentos e compliance em ambientes corporativos.\n\nFormações concluídas: Santander Coders, Microsoft AI Agents, IBM AI Fundamentals, Azure Databricks, Azure Cloud, Java, C#/.NET, Cibersegurança, Power BI, Ciência de Dados",
+      differential:
+        "Combino profundo conhecimento de ambientes regulados (compliance bancário, segurança de dados, auditoria) com capacidade técnica para modernizar infraestrutura legada e aplicar análise avançada de dados. Experiência prática em avaliar não apenas viabilidade técnica, mas também riscos, conformidade e impacto organizacional de cada solução.",
+      objective:
+        "Busco oportunidades em projetos que envolvam governança de dados, modernização de infraestrutura ou sistemas corporativos regulados — preferencialmente em formato remoto ou híbrido — onde minha experiência bancária e stack técnico diversificado possam gerar impacto mensurável.",
     },
     projectCategories: {
       dataScience: "Ciência de Dados",
@@ -178,10 +184,13 @@ export const translations: Record<Locale, Translations> = {
     sections: {
       aboutTitle: "👨‍💻 About Me",
       aboutIntro:
-        "Welcome! I am a professional with over 15 years of experience in mission-critical banking systems, now dedicated to transforming data into strategic intelligence and supporting decision-making.",
+        "Data Science Analyst | Python | SQL | Azure Databricks | Operational Efficiency & Data Governance",
       aboutDetails:
-        "I use Python, Azure Databricks, SQL, and Neo4J to develop data solutions with technical rigor, compliance, and a focus on direct business impact.",
+        "Welcome! I am a professional with over 15 years of experience in mission-critical banking systems, now dedicated to transforming data into strategic intelligence and supporting decision-making.\n\nI use a modern stack based on Python, Azure Databricks, SQL, and Neo4J to develop data solutions with technical rigor, compliance, and a focus on direct business impact.",
       experienceTitle: "💼 Technical Experience",
+      reskillingTitle: "📚 Transition & Reskilling",
+      differentialTitle: "⭐ Differential",
+      objectiveTitle: "🎯 Objective",
       stackConsolidated: "Consolidated Stack",
       stackUpdating: "Stack in Evolution",
       projectsTitle: "🛠 Featured Projects",
@@ -194,60 +203,4 @@ export const translations: Record<Locale, Translations> = {
       description:
         "Analysis of the application of low-code platforms in the healthcare sector, addressing benefits, challenges, and practical use cases for accelerated development of medical applications.",
       award1: "🏆 Winner of the 35th DIO Article Competition",
-      award2: "🏆 Best Article of the Month – September 2025",
-      readOn: "You can read the article on the following platforms:",
-      links: {
-        dio: "https://web.dio.me/articles/low-code-na-saude-como-criar-apps-medicos-em-semanas-d77f6760fa5a?back=/articles",
-        linkedin:
-          "https://www.linkedin.com/pulse/low-code-na-sa%C3%BAde-como-criar-apps-m%C3%A9dicos-em-semanas-luiz-dos-santos-xen7e",
-        medium:
-          "https://medium.com/@sergioluiz.santos/low-code-na-sa%C3%BAde-como-criar-apps-m%C3%A9dicos-em-semanas-1c6f05c2c89e",
-      },
-    },
-    experience: {
-      item1:
-        "Automated IPVA system eliminating 2,920 annual hours of manual processing",
-      item2:
-        "Corporate network infrastructure for 500+ users with 99.5% availability",
-      item3:
-        "Interdepartmental legal systems with full traceability and LGPD compliance",
-      stackConsolidated:
-        "Visual Basic, C, SQL Server, Windows Server, IBM Mainframe Emulation, Active Directory",
-      stackUpdating:
-        "Java, C#/.NET, Python, Azure Databricks, Azure AI, Power BI, Machine Learning, Docker, Neo4J",
-    },
-    projectCategories: {
-      dataScience: "Data Science",
-      azureDatabricks: "Azure Databricks",
-      neo4j: "Neo4J",
-      powerBI: "Power BI & Data Analysis",
-      database: "Databases",
-      python: "Python",
-      dotnet: "C#/dotnet .NET",
-      java: "Java",
-      machineLearning: "Machine Learning",
-      aws: "Amazon AWS",
-      cybersecurity: "Cybersecurity",
-      logic: "Programming Logic",
-      html: "HTML",
-      articlesRepo: "Technical Articles Repository",
-    },
-  },
-};
-
-/**
- * Helper para obter traduções com fallback seguro
- */
-export function getTranslation(locale: string): Translations {
-  const safeLocale: Locale = SUPPORTED_LOCALES.includes(locale as Locale)
-    ? (locale as Locale)
-    : DEFAULT_LOCALE;
-
-  if (!SUPPORTED_LOCALES.includes(locale as Locale)) {
-    console.warn(
-      `[i18n] Locale "${locale}" não suportado. Usando fallback "${DEFAULT_LOCALE}".`
-    );
-  }
-
-  return translations[safeLocale];
-}
+      award2: "🏆 Best Article of the Month

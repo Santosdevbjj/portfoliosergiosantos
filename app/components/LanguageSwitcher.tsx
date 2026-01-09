@@ -7,6 +7,7 @@ import type { Lang } from "@/lib/i18n/config";
 const languages: { code: Lang; label: string }[] = [
   { code: "pt", label: "Português" },
   { code: "en", label: "English" },
+  { code: "es", label: "Español" }, // ✅ incluído espanhol
 ];
 
 interface LanguageSwitcherProps {
@@ -36,7 +37,7 @@ export default function LanguageSwitcher({ lang, dict }: LanguageSwitcherProps) 
   };
 
   return (
-    <div className="relative inline-block text-left">
+    <div className="relative inline-block text-left" aria-label="Language selector">
       {/* Botão principal */}
       <button
         type="button"

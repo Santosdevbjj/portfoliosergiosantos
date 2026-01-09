@@ -4,15 +4,19 @@ import type { NextRequest } from "next/server";
 import { match as matchLocale } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 
-// Idiomas suportados (basta adicionar novos aqui)
 const locales = ["en", "pt", "es"];
 const defaultLocale = "pt";
 
-// Função para detectar idioma
 function getLocale(request: NextRequest): string {
+  // 1️⃣ Prioriza cookie
+  const cookieLocale = request.cookies.get("locale")?.value;
+  if (cookieLocale && locales.includes(cookieLocale)) {
+    return cookieLocale;
+  }
+
+  // 2️⃣ Fallback para Accept-Language
   const negotiatorHeaders: Record<string, string> = {};
   request.headers.forEach((value, key) => (negotiatorHeaders[key] = value));
-
   const languages = new Negotiator({ headers: negotiatorHeaders }).languages();
 
   try {
@@ -22,8 +26,7 @@ function getLocale(request: NextRequest): string {
   }
 }
 
-// Função para enviar log assíncrono
-async function sendLog(locale: string, pathname: string) {
+async function sendLog(locale: string, pathname: string, theme: string) {
   try {
     await fetch("https://in.logtail.com/", {
       method: "POST",
@@ -34,7 +37,7 @@ async function sendLog(locale: string, pathname: string) {
       body: JSON.stringify({
         service: "middleware",
         level: "info",
-        message: `Idioma detectado: ${locale} | Path: ${pathname}`,
+        message: `Idioma: ${locale} | Tema: ${theme} | Path: ${pathname}`,
         timestamp: new Date().toISOString(),
       }),
     });
@@ -45,6 +48,7 @@ async function sendLog(locale: string, pathname: string) {
 
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  const theme = request.cookies.get("theme")?.value || "system";
 
   const pathnameIsMissingLocale = locales.every(
     (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
@@ -53,13 +57,18 @@ export function middleware(request: NextRequest) {
   if (pathnameIsMissingLocale) {
     const locale = getLocale(request);
 
-    // 🔎 Log assíncrono (não bloqueia resposta ao usuário)
-    sendLog(locale, pathname);
+    // 🔎 Log assíncrono
+    sendLog(locale, pathname, theme);
 
     return NextResponse.redirect(
       new URL(`/${locale}${pathname === "/" ? "" : pathname}`, request.url)
     );
   }
+
+  // ✅ Injeta cabeçalho de tema para SSR
+  const res = NextResponse.next();
+  res.headers.set("x-theme", theme);
+  return res;
 }
 
 export const config = {

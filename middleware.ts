@@ -1,10 +1,11 @@
+// middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { match as matchLocale } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 
-// Idiomas suportados
-const locales = ["en", "pt"];
+// Idiomas suportados (basta adicionar novos aqui)
+const locales = ["en", "pt", "es"];
 const defaultLocale = "pt";
 
 // Função para detectar idioma
@@ -24,22 +25,20 @@ function getLocale(request: NextRequest): string {
 // Função para enviar log assíncrono
 async function sendLog(locale: string, pathname: string) {
   try {
-    // Exemplo com Logtail (poderia ser Datadog, CloudWatch, etc.)
     await fetch("https://in.logtail.com/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.LOGTAIL_TOKEN}` // token seguro via env
+        Authorization: `Bearer ${process.env.LOGTAIL_TOKEN}`,
       },
       body: JSON.stringify({
         service: "middleware",
         level: "info",
         message: `Idioma detectado: ${locale} | Path: ${pathname}`,
-        timestamp: new Date().toISOString()
-      })
+        timestamp: new Date().toISOString(),
+      }),
     });
   } catch (error) {
-    // fallback leve: apenas console.log em caso de falha
     console.log("[middleware] Falha ao enviar log externo:", error);
   }
 }
@@ -65,6 +64,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js|.*\\.png|.*\\.svg|.*\\.jpg|.*\\.jpeg).*)"
-  ]
+    "/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js|.*\\.(png|svg|jpg|jpeg|webp)).*)",
+  ],
 };

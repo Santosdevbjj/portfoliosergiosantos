@@ -7,7 +7,7 @@ import { translations } from "@/lib/i18n";
 import { getPortfolioRepos, Category, CATEGORIES_ORDER, GitHubRepo } from "@/lib/github";
 
 interface Props {
-  params: { lang: "pt" | "en" };
+  params: { lang: "pt" | "en" | "es" }; // ✅ agora inclui espanhol
 }
 
 export default async function Page({ params }: Props) {

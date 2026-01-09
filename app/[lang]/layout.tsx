@@ -45,22 +45,15 @@ export default async function Layout({ children, params }: LayoutProps) {
   return (
     <html lang={lang}>
       <head>
-        {/* Script inline minificado para aplicar tema antes da hidratação */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `!function(){try{var e=document.cookie.split("; ").find(e=>e.startsWith("theme="))?.split("=")[1]||"system",t=window.matchMedia("(prefers-color-scheme: dark)").matches,n="dark"===e||"system"===e&&t;n?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark")}catch(e){}}();`,
-          }}
-        />
+        {/* ✅ Preload garante que o script seja baixado cedo */}
+        <link rel="preload" href="/theme-init.js" as="script" />
+        {/* ✅ defer garante execução após o parsing do HTML */}
+        <script src="/theme-init.js" defer />
       </head>
       <body className="min-h-screen flex flex-col bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased transition-colors duration-300">
         <PageWrapper lang={lang}>
-          {/* Cabeçalho multilíngue */}
           <Header dict={dict} lang={lang} />
-
-          {/* Conteúdo principal flexível */}
           <main className="flex-1 w-full max-w-7xl mx-auto p-4">{children}</main>
-
-          {/* Rodapé multilíngue */}
           <Footer dict={dict} lang={lang} />
         </PageWrapper>
       </body>

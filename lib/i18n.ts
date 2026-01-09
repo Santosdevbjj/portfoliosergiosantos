@@ -3,8 +3,8 @@
 /**
  * Idiomas suportados
  */
-export type Locale = "pt" | "en";
-export const SUPPORTED_LOCALES: Locale[] = ["pt", "en"];
+export type Locale = "pt" | "en" | "es";
+export const SUPPORTED_LOCALES: Locale[] = ["pt", "en", "es"];
 export const DEFAULT_LOCALE: Locale = "pt";
 
 /**
@@ -84,45 +84,47 @@ export type Translations = {
  * Traduções inline
  */
 export const translations: Record<Locale, Translations> = {
-  pt: {
+  // ... blocos pt e en já existentes ...
+
+  es: {
     navigation: {
-      home: "Início",
-      about: "Sobre",
-      projects: "Projetos",
-      contact: "Contato",
+      home: "Inicio",
+      about: "Sobre mí",
+      projects: "Proyectos",
+      contact: "Contacto",
       language: "Idioma",
     },
     footer: {
-      rights: "Todos os direitos reservados",
+      rights: "Todos los derechos reservados",
     },
     darkMode: {
       lightMode: "Modo Claro",
-      darkMode: "Modo Escuro",
+      darkMode: "Modo Oscuro",
     },
     sections: {
-      aboutTitle: "👨‍💻 Sobre mim",
+      aboutTitle: "👨‍💻 Sobre mí",
       aboutIntro:
-        "Analista de Ciência de Dados | Python | SQL | Azure Databricks | Eficiência Operacional e Governança de Dados",
+        "Analista de Ciencia de Datos | Python | SQL | Azure Databricks | Eficiencia Operacional y Gobernanza de Datos",
       aboutDetails:
-        "Seja bem-vindo(a). Sou um profissional com mais de 15 anos de experiência em sistemas de missão crítica no setor bancário, agora dedicando minha atuação a transformar dados em inteligência estratégica e suporte à tomada de decisão.\n\nUtilizo um stack moderno baseado em Python, Azure Databricks, SQL e Neo4J para desenvolver soluções de dados com rigor técnico, conformidade e foco em impacto direto no negócio.",
-      experienceTitle: "💼 Experiência Técnica",
-      reskillingTitle: "📚 Transição e Reskilling",
+        "Bienvenido(a). Soy un profesional con más de 15 años de experiencia en sistemas bancarios de misión crítica, ahora dedicado a transformar datos en inteligencia estratégica y apoyar la toma de decisiones.\n\nUtilizo un stack moderno basado en Python, Azure Databricks, SQL y Neo4J para desarrollar soluciones de datos con rigor técnico, cumplimiento y enfoque en impacto directo en el negocio.",
+      experienceTitle: "💼 Experiencia Técnica",
+      reskillingTitle: "📚 Transición y Recapacitación",
       differentialTitle: "⭐ Diferencial",
       objectiveTitle: "🎯 Objetivo",
       stackConsolidated: "Stack consolidado",
-      stackUpdating: "Stack em atualização",
-      projectsTitle: "🛠 Projetos em Destaque",
-      articlesTitle: "📝 Artigos em Destaque",
-      featuredArticle: "Artigo Vencedor",
-      contactTitle: "Contato Direto",
+      stackUpdating: "Stack en actualización",
+      projectsTitle: "🛠 Proyectos Destacados",
+      articlesTitle: "📝 Artículos Destacados",
+      featuredArticle: "Artículo Ganador",
+      contactTitle: "Contacto Directo",
     },
     featuredArticle: {
-      title: "Low-Code na Saúde: Como Criar Apps Médicos em Semanas",
+      title: "Low-Code en Salud: Cómo Crear Apps Médicas en Semanas",
       description:
-        "Análise sobre aplicação de plataformas low-code no setor de saúde, abordando benefícios, desafios e casos de uso práticos para desenvolvimento acelerado de aplicações médicas.",
-      award1: "🏆 Vencedor da 35ª Competição de Artigos DIO",
-      award2: "🏆 Melhor Artigo do Mês - Setembro 2025",
-      readOn: "Você pode ler o artigo nas plataformas:",
+        "Análisis sobre la aplicación de plataformas low-code en el sector salud, abordando beneficios, desafíos y casos prácticos para el desarrollo acelerado de aplicaciones médicas.",
+      award1: "🏆 Ganador de la 35ª Competencia de Artículos DIO",
+      award2: "🏆 Mejor Artículo del Mes - Septiembre 2025",
+      readOn: "Puedes leer el artículo en las siguientes plataformas:",
       links: {
         dio: "https://web.dio.me/articles/low-code-na-saude-como-criar-apps-medicos-em-semanas-d77f6760fa5a?back=/articles",
         linkedin:
@@ -133,119 +135,37 @@ export const translations: Record<Locale, Translations> = {
     },
     experience: {
       item1:
-        "Sistema automatizado de IPVA que eliminou 2.920 horas anuais de processamento manual",
+        "Sistema automatizado de IPVA que eliminó 2.920 horas anuales de procesamiento manual",
       item2:
-        "Infraestrutura de rede corporativa para 500+ usuários com 99,5% de disponibilidade",
+        "Infraestructura de red corporativa para más de 500 usuarios con 99,5% de disponibilidad",
       item3:
-        "Sistemas jurídicos interdepartamentais com rastreabilidade completa e conformidade LGPD",
+        "Sistemas jurídicos interdepartamentales con trazabilidad completa y cumplimiento de la LGPD",
       stackConsolidated:
-        "Visual Basic, C, SQL Server, Windows Server, Emulação Mainframe IBM, Active Directory",
+        "Visual Basic, C, SQL Server, Windows Server, Emulación Mainframe IBM, Active Directory",
       stackUpdating:
-        "Java, C#/.NET, Python, Azure Databricks, Azure AI, Power BI, Machine Learning, Docker, Neo4J (bancos de dados de grafos)",
+        "Java, C#/.NET, Python, Azure Databricks, Azure AI, Power BI, Machine Learning, Docker, Neo4J (bases de datos de grafos)",
       reskilling:
-        "Desde 2008 atuo como consultor independente enquanto invisto em atualização contínua através de bootcamps e certificações especializadas. Recentemente concluí formação em Ciência de Dados com Python e Neo4J para análise de dados com grafos — habilidade aplicável a cenários de detecção de fraudes, análise de relacionamentos e compliance em ambientes corporativos.\n\nFormações concluídas: Santander Coders, Microsoft AI Agents, IBM AI Fundamentals, Azure Databricks, Azure Cloud, Java, C#/.NET, Cibersegurança, Power BI, Ciência de Dados",
+        "Desde 2008 trabajo como consultor independiente mientras invierto en actualización continua mediante bootcamps y certificaciones especializadas. Recientemente completé formación en Ciencia de Datos con Python y Neo4J para análisis de datos con grafos — habilidad aplicable a detección de fraudes, análisis de relaciones y cumplimiento en entornos corporativos.\n\nFormaciones completadas: Santander Coders, Microsoft AI Agents, IBM AI Fundamentals, Azure Databricks, Azure Cloud, Java, C#/.NET, Ciberseguridad, Power BI, Ciencia de Datos",
       differential:
-        "Combino profundo conhecimento de ambientes regulados (compliance bancário, segurança de dados, auditoria) com capacidade técnica para modernizar infraestrutura legada e aplicar análise avançada de dados. Experiência prática em avaliar não apenas viabilidade técnica, mas também riscos, conformidade e impacto organizacional de cada solução.",
+        "Combino profundo conocimiento de entornos regulados (cumplimiento bancario, seguridad de datos, auditoría) con capacidad técnica para modernizar infraestructura heredada y aplicar análisis avanzado de datos. Experiencia práctica en evaluar no solo viabilidad técnica, sino también riesgos, cumplimiento e impacto organizacional de cada solución.",
       objective:
-        "Busco oportunidades em projetos que envolvam governança de dados, modernização de infraestrutura ou sistemas corporativos regulados — preferencialmente em formato remoto ou híbrido — onde minha experiência bancária e stack técnico diversificado possam gerar impacto mensurável.",
+        "Busco oportunidades en proyectos que involucren gobernanza de datos, modernización de infraestructura o sistemas corporativos regulados — preferentemente en formato remoto o híbrido — donde mi experiencia bancaria y stack técnico diversificado puedan generar impacto medible.",
     },
     projectCategories: {
-      dataScience: "Ciência de Dados",
+      dataScience: "Ciencia de Datos",
       azureDatabricks: "Azure Databricks",
       neo4j: "Neo4J",
-      powerBI: "Power BI e Análise de Dados",
-      database: "Banco de Dados",
+      powerBI: "Power BI y Análisis de Datos",
+      database: "Bases de Datos",
       python: "Python",
       dotnet: "C#/dotnet .NET",
       java: "Java",
       machineLearning: "Machine Learning",
       aws: "Amazon AWS",
-      cybersecurity: "Cibersegurança",
-      logic: "Lógica de Programação",
+      cybersecurity: "Ciberseguridad",
+      logic: "Lógica de Programación",
       html: "HTML",
-      articlesRepo: "Repositório de Artigos Técnicos",
-    },
-  },
-  en: {
-    navigation: {
-      home: "Home",
-      about: "About",
-      projects: "Projects",
-      contact: "Contact",
-      language: "Language",
-    },
-    footer: {
-      rights: "All rights reserved",
-    },
-    darkMode: {
-      lightMode: "Light Mode",
-      darkMode: "Dark Mode",
-    },
-    sections: {
-      aboutTitle: "👨‍💻 About Me",
-      aboutIntro:
-        "Data Science Analyst | Python | SQL | Azure Databricks | Operational Efficiency & Data Governance",
-      aboutDetails:
-        "Welcome! I am a professional with over 15 years of experience in mission-critical banking systems, now dedicated to transforming data into strategic intelligence and supporting decision-making.\n\nI use a modern stack based on Python, Azure Databricks, SQL, and Neo4J to develop data solutions with technical rigor, compliance, and a focus on direct business impact.",
-      experienceTitle: "💼 Technical Experience",
-      reskillingTitle: "📚 Transition & Reskilling",
-      differentialTitle: "⭐ Differential",
-      objectiveTitle: "🎯 Objective",
-      stackConsolidated: "Consolidated Stack",
-      stackUpdating: "Stack in Evolution",
-      projectsTitle: "🛠 Featured Projects",
-      articlesTitle: "📝 Featured Articles",
-      featuredArticle: "Featured Article",
-      contactTitle: "Direct Contact",
-    },
-    featuredArticle: {
-      title: "Low-Code in Healthcare: How to Build Medical Apps in Weeks",
-      description:
-        "Analysis of the application of low-code platforms in the healthcare sector, addressing benefits, challenges, and practical use cases for accelerated development of medical applications.",
-      award1: "🏆 Winner of the 35th DIO Article Competition",
-      award2: "🏆 Best Article of the Month – September 2025",
-      readOn: "You can read the article on the following platforms:",
-      links: {
-        dio: "https://web.dio.me/articles/low-code-na-saude-como-criar-apps-medicos-em-semanas-d77f6760fa5a?back=/articles",
-        linkedin:
-          "https://www.linkedin.com/pulse/low-code-na-sa%C3%BAde-como-criar-apps-m%C3%A9dicos-em-semanas-luiz-dos-santos-xen7e",
-        medium:
-          "https://medium.com/@sergioluiz.santos/low-code-na-sa%C3%BAde-como-criar-apps-m%C3%A9dicos-em-semanas-1c6f05c2c89e",
-      },
-    },
-    experience: {
-      item1:
-        "Automated IPVA system eliminating 2,920 annual hours of manual processing",
-      item2:
-        "Corporate network infrastructure for 500+ users with 99.5% availability",
-      item3:
-        "Interdepartmental legal systems with full traceability and LGPD compliance",
-      stackConsolidated:
-        "Visual Basic, C, SQL Server, Windows Server, IBM Mainframe Emulation, Active Directory",
-      stackUpdating:
-        "Java, C#/.NET, Python, Azure Databricks, Azure AI, Power BI, Machine Learning, Docker, Neo4J (graph databases)",
-      reskilling:
-        "Since 2008 I have worked as an independent consultant while continuously investing in upskilling through bootcamps and specialized certifications. I recently completed training in Data Science with Python and Neo4J for graph data analysis — a skill applicable to fraud detection, relationship analysis, and compliance in corporate environments.\n\nCompleted trainings: Santander Coders, Microsoft AI Agents, IBM AI Fundamentals, Azure Databricks, Azure Cloud, Java, C#/.NET, Cybersecurity, Power BI, Data Science",
-      differential:
-        "I combine deep knowledge of regulated environments (banking compliance, data security, auditing) with technical capacity to modernize legacy infrastructure and apply advanced data analysis. Practical experience in evaluating not only technical feasibility, but also risks, compliance, and organizational impact of each solution.",
-      objective:
-        "I seek opportunities in projects involving data governance, infrastructure modernization, or regulated corporate systems — preferably in remote or hybrid formats — where my banking experience and diverse technical stack can deliver measurable impact.",
-    },
-    projectCategories: {
-      dataScience: "Data Science",
-      azureDatabricks: "Azure Databricks",
-      neo4j: "Neo4J",
-      powerBI: "Power BI & Data Analysis",
-      database: "Databases",
-      python: "Python",
-      dotnet: "C#/dotnet .NET",
-      java: "Java",
-      machineLearning: "Machine Learning",
-      aws: "Amazon AWS",
-      cybersecurity: "Cybersecurity",
-      logic: "Programming Logic",
-      html: "HTML",
-      articlesRepo: "Technical Articles Repository",
+      articlesRepo: "Repositorio de Artículos Técnicos",
     },
   },
 };

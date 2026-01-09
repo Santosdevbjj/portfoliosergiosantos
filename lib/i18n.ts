@@ -203,4 +203,66 @@ export const translations: Record<Locale, Translations> = {
       description:
         "Analysis of the application of low-code platforms in the healthcare sector, addressing benefits, challenges, and practical use cases for accelerated development of medical applications.",
       award1: "🏆 Winner of the 35th DIO Article Competition",
-      award2: "🏆 Best Article of the Month
+      award2: "🏆 Best Article of the Month – September 2025",
+      readOn: "You can read the article on the following platforms:",
+      links: {
+        dio: "https://web.dio.me/articles/low-code-na-saude-como-criar-apps-medicos-em-semanas-d77f6760fa5a?back=/articles",
+        linkedin:
+          "https://www.linkedin.com/pulse/low-code-na-sa%C3%BAde-como-criar-apps-m%C3%A9dicos-em-semanas-luiz-dos-santos-xen7e",
+        medium:
+          "https://medium.com/@sergioluiz.santos/low-code-na-sa%C3%BAde-como-criar-apps-m%C3%A9dicos-em-semanas-1c6f05c2c89e",
+      },
+    },
+    experience: {
+      item1:
+        "Automated IPVA system eliminating 2,920 annual hours of manual processing",
+      item2:
+        "Corporate network infrastructure for 500+ users with 99.5% availability",
+      item3:
+        "Interdepartmental legal systems with full traceability and LGPD compliance",
+      stackConsolidated:
+        "Visual Basic, C, SQL Server, Windows Server, IBM Mainframe Emulation, Active Directory",
+      stackUpdating:
+        "Java, C#/.NET, Python, Azure Databricks, Azure AI, Power BI, Machine Learning, Docker, Neo4J (graph databases)",
+      reskilling:
+        "Since 2008 I have worked as an independent consultant while continuously investing in upskilling through bootcamps and specialized certifications. I recently completed training in Data Science with Python and Neo4J for graph data analysis — a skill applicable to fraud detection, relationship analysis, and compliance in corporate environments.\n\nCompleted trainings: Santander Coders, Microsoft AI Agents, IBM AI Fundamentals, Azure Databricks, Azure Cloud, Java, C#/.NET, Cybersecurity, Power BI, Data Science",
+      differential:
+        "I combine deep knowledge of regulated environments (banking compliance, data security, auditing) with technical capacity to modernize legacy infrastructure and apply advanced data analysis. Practical experience in evaluating not only technical feasibility, but also risks, compliance, and organizational impact of each solution.",
+      objective:
+        "I seek opportunities in projects involving data governance, infrastructure modernization, or regulated corporate systems — preferably in remote or hybrid formats — where my banking experience and diverse technical stack can deliver measurable impact.",
+    },
+    projectCategories: {
+      dataScience: "Data Science",
+      azureDatabricks: "Azure Databricks",
+      neo4j: "Neo4J",
+      powerBI: "Power BI & Data Analysis",
+      database: "Databases",
+      python: "Python",
+      dotnet: "C#/dotnet .NET",
+      java: "Java",
+      machineLearning: "Machine Learning",
+      aws: "Amazon AWS",
+      cybersecurity: "Cybersecurity",
+      logic: "Programming Logic",
+      html: "HTML",
+      articlesRepo: "Technical Articles Repository",
+    },
+  },
+};
+
+/**
+ * Helper para obter traduções com fallback seguro
+ */
+export function getTranslation(locale: string): Translations {
+  const safeLocale: Locale = SUPPORTED_LOCALES.includes(locale as Locale)
+    ? (locale as Locale)
+    : DEFAULT_LOCALE;
+
+  if (!SUPPORTED_LOCALES.includes(locale as Locale)) {
+    console.warn(
+      `[i18n] Locale "${locale}" não suportado. Usando fallback "${DEFAULT_LOCALE}".`
+    );
+  }
+
+  return translations[safeLocale];
+}

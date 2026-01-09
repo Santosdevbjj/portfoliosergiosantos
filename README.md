@@ -108,6 +108,7 @@ Transformei dados operacionais da Amazon em **insights acionáveis**, identifica
 # Clone o repositório
 git clone https://github.com/Santosdevbjj/seu-projeto.git
 cd seu-projeto
+```
 
 # Instale dependências
 pip install -r requirements.txt

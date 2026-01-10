@@ -2,38 +2,58 @@
 import { getDictionary, TECHNOLOGY_ORDER } from "@/lib/i18n";
 import { getPortfolioRepos, GitHubRepo } from "@/lib/github";
 import ProjectSection from "./components/ProjectSection";
+import type { Metadata } from "next";
 
 interface HomeProps {
   params: { locale?: string };
 }
 
+/* 🔎 SEO dinâmico por idioma */
+export async function generateMetadata({ params }: HomeProps): Promise<Metadata> {
+  const locale = (params?.locale as "pt" | "en" | "es") ?? "pt";
+  const dict = await getDictionary(locale);
+
+  return {
+    title: dict.portfolio.title,
+    description: dict.portfolio.description,
+    alternates: {
+      canonical: `/${locale}`,
+      languages: {
+        "pt-BR": "/pt",
+        "en-US": "/en",
+        "es-ES": "/es",
+      },
+    },
+    openGraph: {
+      title: dict.portfolio.title,
+      description: dict.portfolio.description,
+      url: `/${locale}`,
+      siteName: "Portfólio Sérgio Santos",
+      locale: locale === "en" ? "en_US" : locale === "es" ? "es_ES" : "pt_BR",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: dict.portfolio.title,
+      description: dict.portfolio.description,
+    },
+  };
+}
+
 export default async function Home({ params }: HomeProps) {
-  // Detecta idioma pela rota (params do App Router)
   const locale = (params?.locale as "pt" | "en" | "es") ?? "pt";
 
   // Carrega dicionário e repositórios em paralelo
   const [dict, repos] = await Promise.all([
     getDictionary(locale),
-    getPortfolioRepos({ next: { revalidate: 60 } }), // cache de 1 min
+    getPortfolioRepos({ next: { revalidate: 60 } }),
   ]);
 
   return (
     <section
       role="main"
-      aria-label={
-        locale === "en"
-          ? "Main presentation"
-          : locale === "es"
-          ? "Presentación principal"
-          : "Apresentação inicial"
-      }
-      lang={
-        locale === "en"
-          ? "en-US"
-          : locale === "es"
-          ? "es-ES"
-          : "pt-BR"
-      }
+      aria-labelledby="page-title"
+      lang={locale === "en" ? "en-US" : locale === "es" ? "es-ES" : "pt-BR"}
       className="container mx-auto max-w-5xl text-center px-4 lg:px-8 py-10 sm:py-16 space-y-6 sm:space-y-8 bg-surface-light dark:bg-surface-dark transition-colors duration-300"
     >
       {/* Título multilíngue */}
@@ -44,7 +64,7 @@ export default async function Home({ params }: HomeProps) {
         🚀 Sérgio Santos
       </h1>
 
-      {/* Descrição multilíngue do portfólio */}
+      {/* Subtítulo multilíngue */}
       <p
         id="page-subtitle"
         className="text-[clamp(1rem,2.5vw,1.25rem)] text-gray-600 dark:text-gray-300"
@@ -52,6 +72,7 @@ export default async function Home({ params }: HomeProps) {
         {dict.portfolio.title}
       </p>
 
+      {/* Descrição multilíngue */}
       <p
         aria-describedby="page-title page-subtitle"
         className="text-[clamp(0.875rem,2vw,1rem)] text-gray-500 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed"
@@ -60,7 +81,7 @@ export default async function Home({ params }: HomeProps) {
       </p>
 
       {/* Seções de projetos multilíngues */}
-      <div className="mt-12 space-y-10 sm:space-y-12">
+      <div className="mt-12 space-y-10 sm:space-y-12" role="region" aria-label={dict.portfolio.projects}>
         {TECHNOLOGY_ORDER.map((tech) => {
           const filteredRepos = repos.filter((r: GitHubRepo) =>
             r.topics?.includes(tech)

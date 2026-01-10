@@ -5,12 +5,22 @@
   "description": "Portfólio multilíngue e responsivo de Sérgio Santos, desenvolvido com Next.js e TailwindCSS.",
   "author": "Sérgio Santos",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seuusuario/portfoliosergiosantos.git"
+  },
+  "bugs": {
+    "url": "https://github.com/seuusuario/portfoliosergiosantos/issues"
+  },
+  "homepage": "https://seuusuario.github.io/portfoliosergiosantos",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "preview": "next build && next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
+    "check": "npm run lint && npm run type-check",
     "format": "prettier --write ."
   },
   "dependencies": {
@@ -19,7 +29,12 @@
     "react-dom": "18.2.0",
     "tailwindcss": "^3.4.0",
     "postcss": "^8.4.31",
-    "autoprefixer": "^10.4.16"
+    "autoprefixer": "^10.4.16",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10",
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/line-clamp": "^0.4.4",
+    "@tailwindcss/container-queries": "^0.1.1"
   },
   "devDependencies": {
     "typescript": "^5.3.3",
@@ -30,6 +45,7 @@
     "prettier": "^3.1.1"
   },
   "engines": {
-    "node": ">=18.17.0"
+    "node": ">=18.17.0",
+    "npm": ">=9.0.0"
   }
 }

@@ -22,9 +22,9 @@ export default async function ProjectsIndex({ params }: PageProps) {
 
       {/* Callout persistente de dica geral */}
       <CalloutPersistent id={`projects-tip-${lang}`} type="info" lang={lang}>
-        {lang === "en" && "Explore the projects in different languages using the LanguageSwitcher."}
-        {lang === "es" && "Explora los proyectos en diferentes idiomas usando el LanguageSwitcher."}
-        {lang === "pt" && "Explore os projetos em diferentes idiomas usando o LanguageSwitcher."}
+        {lang === "en" && "Explore the projects in different languages."}
+        {lang === "es" && "Explora los proyectos en diferentes idiomas."}
+        {lang === "pt" && "Explore os projetos em diferentes idiomas."}
       </CalloutPersistent>
 
       {projects.length === 0 ? (

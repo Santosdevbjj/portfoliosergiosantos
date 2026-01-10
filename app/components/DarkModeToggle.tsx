@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import { translations } from "@/lib/i18n";
+import type { Locale } from "@/lib/i18n";
 
 interface Props {
-  lang: "pt" | "en" | "es";
+  lang: Locale;
 }
 
 export default function DarkModeToggle({ lang }: Props) {
@@ -17,52 +18,36 @@ export default function DarkModeToggle({ lang }: Props) {
     return false;
   });
 
-  const [manualOverride, setManualOverride] = useState<boolean>(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("theme") !== null;
-    }
-    return false;
-  });
-
   useEffect(() => {
+    // Aplica a classe "dark" sempre que o estado mudar
     document.documentElement.classList.toggle("dark", dark);
 
+    // Observa mudanças na preferência do sistema
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = (event: MediaQueryListEvent) => {
-      if (!manualOverride) {
-        const newDark = event.matches;
-        setDark(newDark);
-        document.documentElement.classList.toggle("dark", newDark);
-      }
+      const newDark = event.matches;
+      setDark(newDark);
+      document.documentElement.classList.toggle("dark", newDark);
+      localStorage.setItem("theme", newDark ? "dark" : "light");
     };
 
     mediaQuery.addEventListener("change", handleChange);
     return () => {
       mediaQuery.removeEventListener("change", handleChange);
     };
-  }, [dark, manualOverride]);
+  }, [dark]);
 
   const toggle = () => {
     setDark((prev) => {
       const newValue = !prev;
       document.documentElement.classList.toggle("dark", newValue);
       localStorage.setItem("theme", newValue ? "dark" : "light");
-      setManualOverride(true);
       return newValue;
     });
   };
 
-  const reset = () => {
-    localStorage.removeItem("theme");
-    setManualOverride(false);
-    const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    setDark(systemPrefersDark);
-    document.documentElement.classList.toggle("dark", systemPrefersDark);
-  };
-
   return (
     <div className="flex space-x-2">
-      {/* Botão principal */}
       <button
         onClick={toggle}
         className="
@@ -76,13 +61,13 @@ export default function DarkModeToggle({ lang }: Props) {
         "
         aria-label={
           dark
-            ? translations[lang].darkMode.lightMode
-            : translations[lang].darkMode.darkMode
+            ? translations[lang].theme.themeLight
+            : translations[lang].theme.themeDark
         }
         title={
           dark
-            ? translations[lang].darkMode.lightMode
-            : translations[lang].darkMode.darkMode
+            ? translations[lang].theme.themeLight
+            : translations[lang].theme.themeDark
         }
         aria-pressed={dark}
       >
@@ -91,58 +76,10 @@ export default function DarkModeToggle({ lang }: Props) {
         </span>
         <span className="hidden sm:inline">
           {dark
-            ? translations[lang].darkMode.lightMode
-            : translations[lang].darkMode.darkMode}
+            ? translations[lang].theme.themeLight
+            : translations[lang].theme.themeDark}
         </span>
       </button>
-
-      {/* Botão de reset com ícones diferentes */}
-      {manualOverride && (
-        <div className="flex space-x-1">
-          <button
-            onClick={reset}
-            className="
-              px-2 sm:px-3 py-2 rounded-md
-              bg-gray-100 dark:bg-gray-600
-              text-gray-700 dark:text-gray-200
-              text-sm font-medium
-              hover:bg-gray-200 dark:hover:bg-gray-500
-            "
-            aria-label="Reset theme to system preference"
-            title="Reset theme to system preference"
-          >
-            🔄 {/* ícone de recarregar */}
-          </button>
-          <button
-            onClick={reset}
-            className="
-              px-2 sm:px-3 py-2 rounded-md
-              bg-gray-100 dark:bg-gray-600
-              text-gray-700 dark:text-gray-200
-              text-sm font-medium
-              hover:bg-gray-200 dark:hover:bg-gray-500
-            "
-            aria-label="Reset theme to system preference"
-            title="Reset theme to system preference"
-          >
-            ↩️ {/* ícone de voltar */}
-          </button>
-          <button
-            onClick={reset}
-            className="
-              px-2 sm:px-3 py-2 rounded-md
-              bg-gray-100 dark:bg-gray-600
-              text-gray-700 dark:text-gray-200
-              text-sm font-medium
-              hover:bg-gray-200 dark:hover:bg-gray-500
-            "
-            aria-label="Reset theme to system preference"
-            title="Reset theme to system preference"
-          >
-            🗑️ {/* ícone de limpar */}
-          </button>
-        </div>
-      )}
     </div>
   );
 }

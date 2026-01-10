@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const baseUrl = "https://seusite.com"; // ajuste para seu domínio real
+const baseUrl = "https://portfoliosergiosantos.vercel.app/"; // ajuste para seu domínio real
 
 export default function robots(): MetadataRoute.Robots {
   return {

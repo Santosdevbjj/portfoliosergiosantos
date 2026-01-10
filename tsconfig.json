@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
     /* Alvo moderno de compilação */
-    "target": "ES2020",
+    "target": "ES2022",
 
     /* Bibliotecas padrão incluídas */
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
 
     /* Configurações de segurança e robustez */
     "strict": true,
-    "skipLibCheck": true,              /* acelera builds */
+    "skipLibCheck": true,
     "noEmit": true,
-    "allowJs": false,                  /* se projeto for 100% TS */
+    "allowJs": false,
     "forceConsistentCasingInFileNames": true,
 
     /* Compatibilidade com módulos e Next.js */
@@ -21,6 +21,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "moduleDetection": "force",
 
     /* Performance */
     "incremental": true,
@@ -32,7 +34,7 @@
     },
 
     /* Tipos globais */
-    "types": ["node", "react"],
+    "types": ["node", "react", "next", "jest"],
 
     /* Plugin Next.js */
     "plugins": [
@@ -47,5 +49,5 @@
     "**/*.ts",
     "**/*.tsx"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", ".next", "dist"]
 }

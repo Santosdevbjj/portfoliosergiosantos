@@ -45,10 +45,10 @@ export default async function Layout({ children, params }: LayoutProps) {
   return (
     <html lang={lang}>
       <head>
-        {/* ✅ Preload garante que o script seja baixado cedo */}
-        <link rel="preload" href="/theme-init.js" as="script" />
-        {/* ✅ defer garante execução após o parsing do HTML */}
-        <script src="/theme-init.js" defer />
+        {/* ✅ Preload como módulo */}
+        <link rel="modulepreload" href="/theme-init.js" />
+        {/* ✅ Carrega como ES Module */}
+        <script type="module" src="/theme-init.js"></script>
       </head>
       <body className="min-h-screen flex flex-col bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased transition-colors duration-300">
         <PageWrapper lang={lang}>

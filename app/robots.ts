@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 import { type Lang } from "@/lib/mdx";
 
 const baseUrl = "https://portfoliosergiosantos.vercel.app/"; // ajuste para seu domínio real
-const langs: Lang[] = ["pt", "en", "es"]; // importado de lib/mdx.ts
+const langs: Lang[] = ["pt", "en", "es"]; // mesmo array usado no sitemap.ts
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -13,6 +13,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/private/", "/admin/"], // ajuste conforme suas rotas internas
       },
     ],
+    // Gera dinamicamente os links de sitemap para cada idioma
     sitemap: langs.map((lang) => `${baseUrl}/${lang}/sitemap.xml`),
   };
 }

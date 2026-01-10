@@ -7,8 +7,8 @@ import DarkModeToggle from "./DarkModeToggle";
 import type { Translations } from "@/lib/i18n";
 
 interface HeaderProps {
-  dict: Translations["navigation"]; // ✅ tipagem consistente
-  lang: "pt" | "en" | "es"; // ✅ inclui espanhol
+  dict: Translations["navigation"];
+  lang: "pt" | "en" | "es";
 }
 
 export default function Header({ dict, lang }: HeaderProps) {
@@ -23,14 +23,17 @@ export default function Header({ dict, lang }: HeaderProps) {
         {/* Logo / Nome */}
         <div className="flex items-center space-x-2">
           <Link href={`/${lang}`} className="flex items-center">
-            <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
+            <span className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 dark:text-gray-100">
               Sergio Santos
             </span>
           </Link>
         </div>
 
         {/* Navegação principal (desktop) */}
-        <nav className="hidden md:flex space-x-6" aria-label="Main navigation">
+        <nav
+          className="hidden md:flex space-x-6 lg:space-x-8"
+          aria-label="Main navigation"
+        >
           <Link href={`/${lang}`} className="nav-link">
             {dict.home}
           </Link>
@@ -53,7 +56,8 @@ export default function Header({ dict, lang }: HeaderProps) {
             onClick={() => setMenuOpen(!menuOpen)}
             className="md:hidden text-gray-900 dark:text-gray-100 focus:outline-none"
             aria-label="Menu"
-            aria-expanded={menuOpen} // ✅ acessibilidade
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
           >
             ☰
           </button>
@@ -62,8 +66,14 @@ export default function Header({ dict, lang }: HeaderProps) {
 
       {/* Navegação mobile */}
       {menuOpen && (
-        <div className="md:hidden flex justify-center border-t border-gray-200 dark:border-gray-700 py-2">
-          <nav className="flex flex-col space-y-2 text-center" aria-label="Mobile navigation">
+        <div
+          id="mobile-menu"
+          className="md:hidden flex justify-center border-t border-gray-200 dark:border-gray-700 py-2"
+        >
+          <nav
+            className="flex flex-col space-y-2 text-center"
+            aria-label="Mobile navigation"
+          >
             <Link href={`/${lang}`} className="nav-link">
               {dict.home}
             </Link>
@@ -82,6 +92,3 @@ export default function Header({ dict, lang }: HeaderProps) {
     </header>
   );
 }
-
-// ✅ Sugestão: criar uma classe utilitária "nav-link" no Tailwind para evitar repetição:
-// .nav-link { @apply text-sm font-medium text-gray-700 hover:text-indigo-600 dark:text-gray-200 dark:hover:text-indigo-400; }

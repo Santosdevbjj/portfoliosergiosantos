@@ -8,22 +8,16 @@ const locales = ["en", "pt", "es"];
 const defaultLocale = "pt";
 
 function getLocale(request: NextRequest): string {
-  // 1️⃣ Prioriza cookie
   const cookieLocale = request.cookies.get("locale")?.value;
   if (cookieLocale && locales.includes(cookieLocale)) {
     return cookieLocale;
   }
 
-  // 2️⃣ Fallback para Accept-Language
   const negotiatorHeaders: Record<string, string> = {};
   request.headers.forEach((value, key) => (negotiatorHeaders[key] = value));
   const languages = new Negotiator({ headers: negotiatorHeaders }).languages();
 
-  try {
-    return matchLocale(languages, locales, defaultLocale);
-  } catch {
-    return defaultLocale;
-  }
+  return matchLocale(languages || [], locales, defaultLocale);
 }
 
 async function sendLog(locale: string, pathname: string, theme: string) {
@@ -42,8 +36,15 @@ async function sendLog(locale: string, pathname: string, theme: string) {
       }),
     });
   } catch (error) {
-    console.log("[middleware] Falha ao enviar log externo:", error);
+    console.warn("[middleware] Falha ao enviar log externo:", error);
   }
+}
+
+function redirectWithLocale(request: NextRequest, locale: string) {
+  const pathname = request.nextUrl.pathname;
+  return NextResponse.redirect(
+    new URL(`/${locale}${pathname === "/" ? "" : pathname}`, request.url)
+  );
 }
 
 export function middleware(request: NextRequest) {
@@ -56,23 +57,18 @@ export function middleware(request: NextRequest) {
 
   if (pathnameIsMissingLocale) {
     const locale = getLocale(request);
-
-    // 🔎 Log assíncrono
-    sendLog(locale, pathname, theme);
-
-    return NextResponse.redirect(
-      new URL(`/${locale}${pathname === "/" ? "" : pathname}`, request.url)
-    );
+    void sendLog(locale, pathname, theme); // fire-and-forget
+    return redirectWithLocale(request, locale);
   }
 
-  // ✅ Injeta cabeçalho de tema para SSR
   const res = NextResponse.next();
   res.headers.set("x-theme", theme);
+  res.headers.set("x-locale", pathname.split("/")[1] || defaultLocale);
   return res;
 }
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js|.*\\.(png|svg|jpg|jpeg|webp)).*)",
+    "/((?!api|_next/|favicon.ico|sw.js|.*\\.(png|svg|jpg|jpeg|webp)).*)",
   ],
 };

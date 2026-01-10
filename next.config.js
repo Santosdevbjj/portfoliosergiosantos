@@ -1,4 +1,4 @@
-/** @type {import('next').NextConfig} */ 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
 
@@ -6,14 +6,17 @@ const nextConfig = {
   output: "standalone",
 
   compiler: {
-    // Remove console.log em produção (mantém console.error)
-    removeConsole: process.env.NODE_ENV === "production",
+    // Remove console.log em produção, mas mantém warn e error
+    removeConsole:
+      process.env.NODE_ENV === "production"
+        ? { exclude: ["error", "warn"] }
+        : false,
   },
 
-  // Internacionalização (i18n)
+  // Internacionalização (i18n) — alinhado com LanguageSwitcher
   i18n: {
-    locales: ["pt", "en"],   // idiomas suportados
-    defaultLocale: "pt",     // idioma padrão
+    locales: ["pt", "en", "es"], // idiomas suportados
+    defaultLocale: "pt",         // idioma padrão
   },
 
   // Compressão para melhor performance
@@ -36,10 +39,25 @@ const nextConfig = {
           { key: "X-Frame-Options", value: "DENY" },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+          { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
+          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
         ],
       },
     ];
+  },
+
+  // Recursos experimentais úteis
+  experimental: {
+    typedRoutes: true, // gera tipos para links automaticamente
+    optimizePackageImports: ["react", "react-dom"],
   },
 };
 

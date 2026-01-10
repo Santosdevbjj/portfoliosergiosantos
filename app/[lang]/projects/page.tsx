@@ -1,57 +1,9 @@
+import Link from "next/link";
 import { getAllProjects, type Lang } from "@/lib/mdx";
-import type { Metadata } from "next";
+import CalloutPersistent from "@/components/CalloutPersistent";
 
 interface PageProps {
   params: { lang: Lang };
-}
-
-/** SEO dinâmico para a página de índice */
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { lang } = params;
-
-  const title =
-    lang === "en"
-      ? "Projects"
-      : lang === "es"
-      ? "Proyectos"
-      : "Projetos";
-
-  const description =
-    lang === "en"
-      ? "Browse all portfolio projects in English."
-      : lang === "es"
-      ? "Explora todos los proyectos del portafolio en español."
-      : "Veja todos os projetos do portfólio em português.";
-
-  const baseUrl = "https://seusite.com"; // ajuste para seu domínio real
-  const path = "/projects";
-
-  return {
-    title,
-    description,
-    alternates: {
-      canonical: `${baseUrl}/${lang}${path}`,
-      languages: {
-        "pt-BR": `${baseUrl}/pt${path}`,
-        "en-US": `${baseUrl}/en${path}`,
-        "es-ES": `${baseUrl}/es${path}`,
-      },
-    },
-    openGraph: {
-      title,
-      description,
-      url: `${baseUrl}/${lang}${path}`,
-      siteName: "Portfólio Sergio Santos",
-      locale: lang === "en" ? "en_US" : lang === "es" ? "es_ES" : "pt_BR",
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: ["/og-image.png"],
-    },
-  };
 }
 
 export default async function ProjectsIndex({ params }: PageProps) {
@@ -59,7 +11,7 @@ export default async function ProjectsIndex({ params }: PageProps) {
   const projects = await getAllProjects(lang);
 
   return (
-    <section className="container py-10">
+    <section className="container py-10 space-y-6">
       <h1 className="text-2xl font-bold mb-6">
         {lang === "en"
           ? "Projects"
@@ -67,6 +19,13 @@ export default async function ProjectsIndex({ params }: PageProps) {
           ? "Proyectos"
           : "Projetos"}
       </h1>
+
+      {/* Callout persistente de dica geral */}
+      <CalloutPersistent id={`projects-tip-${lang}`} type="info" lang={lang}>
+        {lang === "en" && "Explore the projects in different languages using the LanguageSwitcher."}
+        {lang === "es" && "Explora los proyectos en diferentes idiomas usando el LanguageSwitcher."}
+        {lang === "pt" && "Explore os projetos em diferentes idiomas usando o LanguageSwitcher."}
+      </CalloutPersistent>
 
       {projects.length === 0 ? (
         <p className="text-gray-600 dark:text-gray-300">
@@ -83,7 +42,7 @@ export default async function ProjectsIndex({ params }: PageProps) {
               key={project.slug}
               className="border-b border-light dark:border-dark pb-4"
             >
-              <a
+              <Link
                 href={`/${lang}/projects/${project.slug}`}
                 className="block group"
               >
@@ -100,7 +59,7 @@ export default async function ProjectsIndex({ params }: PageProps) {
                     {project.metadata.description}
                   </p>
                 )}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>

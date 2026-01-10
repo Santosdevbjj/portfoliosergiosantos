@@ -11,7 +11,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/private/", "/admin/"], // ajuste conforme suas rotas internas
       },
     ],
-    // Em vez de listar cada sitemap, apontamos para o index
+    // Em vez de listar cada sitemap, apontamos para o index central
     sitemap: [`${baseUrl}/sitemap-index.xml`],
   };
 }

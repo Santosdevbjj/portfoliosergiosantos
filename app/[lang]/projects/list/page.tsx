@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { type Lang } from "@/lib/mdx";
+import { getDictionary, DEFAULT_LOCALE } from "@/lib/i18n";
 
 interface PageProps {
   params: { lang: Lang };
@@ -7,13 +8,15 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { lang } = params;
+  const dict = getDictionary(lang as any || DEFAULT_LOCALE);
 
-  const title =
+  const title = `${dict.sections.projectsTitle} – ${
     lang === "en"
-      ? "Projects – Search and Filter"
+      ? "Search and Filter"
       : lang === "es"
-      ? "Proyectos – Buscar y Filtrar"
-      : "Projetos – Busca e Filtros";
+      ? "Buscar y Filtrar"
+      : "Busca e Filtros"
+  }`;
 
   const description =
     lang === "en"
@@ -22,7 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       ? "Explora todos los proyectos del portafolio con búsqueda y filtros por etiquetas. Totalmente responsivo y multilingüe."
       : "Explore todos os projetos do portfólio com busca e filtros por tags. Totalmente responsivo e multilíngue.";
 
-  const baseUrl = "https://seusite.com"; // ajuste para seu domínio real
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://seusite.com";
   const path = "/projects/list";
 
   return {
@@ -43,13 +46,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       siteName: "Portfólio Sergio Santos",
       locale: lang === "en" ? "en_US" : lang === "es" ? "es_ES" : "pt_BR",
       type: "website",
-      images: ["/og-image.png"], // ajuste para sua imagem OG real
+      images: [`/og-image-${lang}.png`], // opcional: imagem OG por idioma
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: ["/og-image.png"],
+      images: [`/og-image-${lang}.png`],
     },
   };
 }

@@ -1,41 +1,38 @@
 // middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { match as matchLocale } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
+import { match as matchLocale } from "@formatjs/intl-localematcher";
 
 /**
- * Configuração de idiomas
+ * Idiomas suportados
  */
-const locales = ["en", "pt", "es"];
+const locales = ["en", "pt", "es"] as const;
 const defaultLocale = "pt";
 
 /**
- * Detecta o idioma com base em:
+ * Detecta o locale:
  * 1. Cookie
- * 2. Accept-Language header
+ * 2. Accept-Language
  */
 function getLocale(request: NextRequest): string {
   const cookieLocale = request.cookies.get("locale")?.value?.toLowerCase();
 
-  if (cookieLocale && locales.includes(cookieLocale)) {
+  if (cookieLocale && locales.includes(cookieLocale as any)) {
     return cookieLocale;
   }
 
-  const negotiatorHeaders: Record<string, string> = {};
+  const headers: Record<string, string> = {};
   request.headers.forEach((value, key) => {
-    negotiatorHeaders[key] = value;
+    headers[key] = value;
   });
 
-  const languages = new Negotiator({
-    headers: negotiatorHeaders,
-  }).languages();
-
-  return matchLocale(languages || [], locales, defaultLocale);
+  const languages = new Negotiator({ headers }).languages();
+  return matchLocale(languages, [...locales], defaultLocale);
 }
 
 /**
- * Envio opcional de logs (não bloqueante)
+ * Log externo opcional (não bloqueante)
  */
 async function sendLog(locale: string, pathname: string, theme: string) {
   if (!process.env.LOGTAIL_TOKEN) return;
@@ -50,92 +47,65 @@ async function sendLog(locale: string, pathname: string, theme: string) {
       body: JSON.stringify({
         service: "middleware",
         level: "info",
-        message: `Idioma: ${locale} | Tema: ${theme} | Path: ${pathname}`,
+        message: `locale=${locale} theme=${theme} path=${pathname}`,
         timestamp: new Date().toISOString(),
       }),
     });
-  } catch (error) {
-    console.warn("[middleware] Falha ao enviar log externo:", error);
+  } catch {
+    // nunca quebra o middleware
   }
-}
-
-/**
- * Redireciona a rota para o idioma detectado
- */
-function redirectWithLocale(request: NextRequest, locale: string) {
-  const pathname = request.nextUrl.pathname;
-
-  return NextResponse.redirect(
-    new URL(`/${locale}${pathname === "/" ? "" : pathname}`, request.url)
-  );
 }
 
 /**
  * Middleware principal
  */
 export function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
-  const theme = request.cookies.get("theme")?.value || "system";
+  const { pathname } = request.nextUrl;
+  const theme = request.cookies.get("theme")?.value ?? "system";
 
   /**
-   * Extensões de arquivos estáticos (SEM regex com grupos)
-   * Compatível com Next.js 14
+   * Exclusões explícitas (SEM regex)
    */
-  const assetExtensions = [
-    ".svg",
-    ".png",
-    ".jpg",
-    ".jpeg",
-    ".webp",
-    ".pdf",
-    ".ico",
-    ".gif",
-  ];
-
-  /**
-   * Exclusões de rotas
-   */
-  const isExcluded =
+  if (
     pathname.startsWith("/api") ||
-    pathname.startsWith("/_next/static") ||
-    pathname.startsWith("/_next/image") ||
+    pathname.startsWith("/_next") ||
     pathname === "/favicon.ico" ||
     pathname === "/sw.js" ||
-    assetExtensions.some((ext) =>
-      pathname.toLowerCase().endsWith(ext)
-    );
-
-  if (isExcluded) {
+    pathname.endsWith(".png") ||
+    pathname.endsWith(".jpg") ||
+    pathname.endsWith(".jpeg") ||
+    pathname.endsWith(".svg") ||
+    pathname.endsWith(".webp") ||
+    pathname.endsWith(".gif") ||
+    pathname.endsWith(".ico") ||
+    pathname.endsWith(".pdf")
+  ) {
     return NextResponse.next();
   }
 
   /**
-   * Verifica se a rota já contém locale
+   * Verifica se já existe locale na URL
    */
-  const pathnameIsMissingLocale = locales.every(
+  const hasLocale = locales.some(
     (locale) =>
-      !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
+      pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)
   );
 
-  if (pathnameIsMissingLocale) {
+  if (!hasLocale) {
     const locale = getLocale(request);
 
-    // Log não bloqueante
-    sendLog(locale, pathname, theme).catch((err) =>
-      console.warn("[middleware] Logtail error:", err)
-    );
+    sendLog(locale, pathname, theme).catch(() => {});
 
-    return redirectWithLocale(request, locale);
+    return NextResponse.redirect(
+      new URL(`/${locale}${pathname === "/" ? "" : pathname}`, request.url)
+    );
   }
 
   /**
-   * Headers customizados
+   * Headers auxiliares
    */
   const response = NextResponse.next();
-  const segments = pathname.split("/");
-  const currentLocale = locales.includes(segments[1])
-    ? segments[1]
-    : defaultLocale;
+  const currentLocale = pathname.split("/")[1] ?? defaultLocale;
 
   response.headers.set("x-theme", theme);
   response.headers.set("x-locale", currentLocale);
@@ -144,7 +114,8 @@ export function middleware(request: NextRequest) {
 }
 
 /**
- * Matcher global (válido e seguro)
+ * Matcher SIMPLES e seguro
+ * (o filtro real acontece dentro do código)
  */
 export const config = {
   matcher: ["/:path*"],

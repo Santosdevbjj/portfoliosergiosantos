@@ -1,4 +1,3 @@
-// middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { match as matchLocale } from "@formatjs/intl-localematcher";
@@ -7,9 +6,6 @@ import Negotiator from "negotiator";
 const locales = ["en", "pt", "es"];
 const defaultLocale = "pt";
 
-/**
- * Define o idioma do usuário com base em cookies ou cabeçalhos de navegação
- */
 function getLocale(request: NextRequest): string {
   const cookieLocale = request.cookies.get("locale")?.value;
   if (cookieLocale && locales.includes(cookieLocale)) {
@@ -23,9 +19,6 @@ function getLocale(request: NextRequest): string {
   return matchLocale(languages || [], locales, defaultLocale);
 }
 
-/**
- * Envia logs de acesso para o Logtail (BetterStack)
- */
 async function sendLog(locale: string, pathname: string, theme: string) {
   if (!process.env.LOGTAIL_TOKEN) return;
 
@@ -48,9 +41,6 @@ async function sendLog(locale: string, pathname: string, theme: string) {
   }
 }
 
-/**
- * Redireciona para a URL com o prefixo de idioma
- */
 function redirectWithLocale(request: NextRequest, locale: string) {
   const pathname = request.nextUrl.pathname;
   return NextResponse.redirect(
@@ -62,32 +52,32 @@ export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const theme = request.cookies.get("theme")?.value || "system";
 
-  // Verifica se o caminho atual já possui um idioma suportado
   const pathnameIsMissingLocale = locales.every(
     (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
   );
 
   if (pathnameIsMissingLocale) {
     const locale = getLocale(request);
-    void sendLog(locale, pathname, theme); // Execução em background
+    void sendLog(locale, pathname, theme);
     return redirectWithLocale(request, locale);
   }
 
   const res = NextResponse.next();
-  // Injeta headers úteis para os componentes
   res.headers.set("x-theme", theme);
   res.headers.set("x-locale", pathname.split("/")[1] || defaultLocale);
   return res;
 }
 
-/**
- * CONFIGURAÇÃO DO MATCHER (CORRIGIDA)
- * Esta regex impede que o middleware intercepte arquivos estáticos e de sistema.
- * O uso de (?:) evita o erro "Capturing groups are not allowed".
- */
-
 export const config = {
   matcher: [
-    "/((?!api|_next|favicon.ico|sw.js|.*\\.(?:png|svg|jpg|jpeg|webp|pdf)).*)",
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public files (svg, png, jpg, jpeg, webp, pdf)
+     */
+    "/((?!api|_next/static|_next/image|favicon.ico|sw.js|.*\\.(?:svg|png|jpg|jpeg|webp|pdf)).*)",
   ],
 };

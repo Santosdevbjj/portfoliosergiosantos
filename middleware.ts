@@ -1,3 +1,4 @@
+// middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { match as matchLocale } from "@formatjs/intl-localematcher";
@@ -76,6 +77,15 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - sw.js (service worker)
+     * - public files (svg, png, jpg, jpeg, webp, pdf, ico, gif)
+     */
     "/((?!api|_next/static|_next/image|favicon.ico|sw.js|.*\\.(?:svg|png|jpg|jpeg|webp|pdf|ico|gif)).*)",
   ],
 };

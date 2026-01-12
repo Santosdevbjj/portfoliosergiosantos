@@ -12,13 +12,18 @@ interface Props {
 }
 
 export default function ProjectsSection({ locale, dict, projects }: Props) {
+  // Exibir apenas projetos em destaque
   const featuredProjects = projects.slice(0, 3);
+
+  const htmlLang =
+    locale === "en" ? "en-US" : locale === "es" ? "es-ES" : "pt-BR";
 
   return (
     <section
       id="featured-projects"
       role="region"
-      aria-labelledby="projects-title"
+      aria-labelledby="featured-projects-title"
+      lang={htmlLang}
       className="
         max-w-7xl mx-auto
         px-4 lg:px-8
@@ -28,7 +33,7 @@ export default function ProjectsSection({ locale, dict, projects }: Props) {
     >
       {/* TÍTULO */}
       <h2
-        id="projects-title"
+        id="featured-projects-title"
         className="
           text-3xl sm:text-4xl
           font-bold
@@ -39,7 +44,7 @@ export default function ProjectsSection({ locale, dict, projects }: Props) {
         {dict.sections.projectsTitle}
       </h2>
 
-      {/* GRID */}
+      {/* GRID DE PROJETOS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {featuredProjects.map((repo) => (
           <ProjectCard
@@ -51,7 +56,7 @@ export default function ProjectsSection({ locale, dict, projects }: Props) {
         ))}
       </div>
 
-      {/* CTA */}
+      {/* CTA – VER TODOS */}
       <div className="text-center">
         <Link
           href={`/${locale}/projects/list`}

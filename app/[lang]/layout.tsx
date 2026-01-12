@@ -15,6 +15,14 @@ export async function generateMetadata({ params }: { params: { lang: "pt" | "en"
   const { lang } = params;
   const dict = translations[lang];
 
+  // Seleciona imagem social correta por idioma
+  const image =
+    lang === "pt"
+      ? "/og-image-pt.png"
+      : lang === "en"
+      ? "/og-image-en.png"
+      : "/og-image-es.png";
+
   return {
     title: dict.meta.title,
     description: dict.meta.description,
@@ -22,13 +30,18 @@ export async function generateMetadata({ params }: { params: { lang: "pt" | "en"
       title: dict.meta.title,
       description: dict.meta.description,
       url: `https://seusite.com/${lang}`,
-      siteName: "Meu Site",
+      siteName: "Sergio Santos Portfolio",
       images: [
         {
-          url: "/og-image.png",
+          url: image,
           width: 1200,
           height: 630,
-          alt: "Imagem social",
+          alt:
+            lang === "pt"
+              ? "Sergio Santos - Analista de Dados"
+              : lang === "en"
+              ? "Sergio Santos - Data Science Analyst"
+              : "Sergio Santos - Analista de Ciencia de Datos",
         },
       ],
       locale: lang === "pt" ? "pt_BR" : lang === "en" ? "en_US" : "es_ES",
@@ -38,7 +51,7 @@ export async function generateMetadata({ params }: { params: { lang: "pt" | "en"
       card: "summary_large_image",
       title: dict.meta.title,
       description: dict.meta.description,
-      images: ["/og-image.png"],
+      images: [image],
     },
   };
 }
@@ -63,7 +76,12 @@ export default async function Layout({ children, params }: LayoutProps) {
           <Header dict={dict} lang={lang} />
 
           {/* Conteúdo principal flexível e centralizado */}
-          <main className="flex-1 w-full max-w-7xl mx-auto p-4">{children}</main>
+          <main
+            role="main"
+            className="flex-1 w-full max-w-7xl mx-auto p-4"
+          >
+            {children}
+          </main>
 
           {/* Rodapé multilíngue e responsivo */}
           <Footer dict={dict} lang={lang} />

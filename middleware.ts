@@ -85,15 +85,9 @@ export function middleware(request: NextRequest) {
  * Esta regex impede que o middleware intercepte arquivos estáticos e de sistema.
  * O uso de (?:) evita o erro "Capturing groups are not allowed".
  */
+
 export const config = {
   matcher: [
-    /*
-     * Ignora:
-     * 1. api (rotas de API)
-     * 2. _next (arquivos internos do framework)
-     * 3. favicon.ico, sw.js (arquivos de raiz)
-     * 4. Extensões de imagem e documentos (png, svg, jpg, webp, pdf)
-     */
     "/((?!api|_next|favicon.ico|sw.js|.*\\.(?:png|svg|jpg|jpeg|webp|pdf)).*)",
   ],
 };

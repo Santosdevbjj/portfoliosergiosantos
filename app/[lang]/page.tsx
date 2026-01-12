@@ -38,8 +38,11 @@ export default async function Page({ params }: Props) {
   return (
     <PageWrapper>
       <Header lang={params.lang} dict={t.navigation} />
-      <main className="flex-1 p-4 max-w-7xl mx-auto">
-        
+
+      <main
+        role="main"
+        className="flex-1 p-4 max-w-7xl mx-auto"
+      >
         {/* Personal Introduction */}
         <section className="mb-8" aria-labelledby="about-title">
           <h1 id="about-title" className="text-3xl sm:text-4xl font-bold mb-2">
@@ -51,12 +54,19 @@ export default async function Page({ params }: Props) {
           </p>
         </section>
 
-        {/* Featured Article Section (extraído para componente) */}
-        <FeaturedArticleSection dict={t.sections} article={t.featuredArticle} />
+        {/* Featured Article Section */}
+        <section className="mb-8" aria-labelledby="featured-article-title">
+          <h2 id="featured-article-title" className="sr-only">
+            {t.sections.featuredArticleTitle}
+          </h2>
+          <FeaturedArticleSection dict={t.sections} article={t.featuredArticle} />
+        </section>
 
         {/* Technical Experience */}
         <section className="mb-8" aria-labelledby="experience-title">
-          <h2 id="experience-title" className="text-2xl font-bold mb-4">{t.sections.experienceTitle}</h2>
+          <h2 id="experience-title" className="text-2xl font-bold mb-4">
+            {t.sections.experienceTitle}
+          </h2>
           <ul className="list-disc list-inside space-y-2 text-base">
             <li>{t.experience.item1}</li>
             <li>{t.experience.item2}</li>
@@ -80,13 +90,14 @@ export default async function Page({ params }: Props) {
             .map(([cat, projects]) => (
               <ProjectSection
                 key={cat}
-                title={categoryMap[cat] || cat}
+                title={categoryMap[cat] || t.projectCategories.unknown}
                 projects={projects}
               />
             ))}
         </section>
       </main>
-      <Footer lang={params.lang} dict={{ ...t.navigation, ...t.footer }} />
+
+      <Footer lang={params.lang} dict={t.footer} />
     </PageWrapper>
   );
 }

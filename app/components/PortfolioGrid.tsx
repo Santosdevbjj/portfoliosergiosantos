@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import {
   getPortfolioRepos,
+  categorizeRepos,
   CATEGORIES_ORDER,
   type GitHubRepo,
+  type CategoryKey,
 } from "@/lib/github";
 import { translations, type Locale } from "@/lib/i18n";
-
-type CategoryKey = (typeof CATEGORIES_ORDER)[number];
 
 interface PortfolioGridProps {
   lang: Locale;
@@ -29,10 +29,14 @@ export default function PortfolioGrid({ lang }: PortfolioGridProps) {
   useEffect(() => {
     async function fetchRepos() {
       setLoading(true);
-      const categorized = await getPortfolioRepos();
-      setReposByCategory(categorized as Record<CategoryKey, GitHubRepo[]>);
+
+      const repos = await getPortfolioRepos();
+      const categorized = categorizeRepos(repos);
+
+      setReposByCategory(categorized);
       setLoading(false);
     }
+
     fetchRepos();
   }, []);
 
@@ -50,6 +54,13 @@ export default function PortfolioGrid({ lang }: PortfolioGridProps) {
       ? "No hay proyectos en esta categoría."
       : "Nenhum projeto nesta categoria.";
 
+  const repoAriaLabel = (name: string) =>
+    lang === "en"
+      ? `Open repository ${name} on GitHub`
+      : lang === "es"
+      ? `Abrir repositorio ${name} en GitHub`
+      : `Abrir repositório ${name} no GitHub`;
+
   return (
     <section
       className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
@@ -62,7 +73,7 @@ export default function PortfolioGrid({ lang }: PortfolioGridProps) {
         {dict.sections.projectsTitle}
       </h2>
 
-      {/* Tabs */}
+      {/* Tabs de categorias */}
       <div className="flex flex-wrap gap-2 mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
         {CATEGORIES_ORDER.map((category) => {
           const label = dict.projectCategories[category] ?? category;
@@ -107,8 +118,8 @@ export default function PortfolioGrid({ lang }: PortfolioGridProps) {
               href={repo.html_url}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={repoAriaLabel(repo.name)}
               className="block rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition p-4"
-              aria-label={`Open repository ${repo.name} on GitHub`}
             >
               <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
                 {repo.name}

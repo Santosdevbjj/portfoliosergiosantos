@@ -9,24 +9,21 @@ import { getDictionary } from "@/lib/i18n";
 import {
   getPortfolioRepos,
   CATEGORIES_ORDER,
-  CategoryKey,
-  GitHubRepo,
+  type GitHubRepo,
 } from "@/lib/github";
 
 /**
- * CONFIGURAÇÕES DE CACHE - NEXT.JS 15
- * dynamic: force-static -> Garante que a página seja gerada no build (SSG).
- * revalidate: 3600 -> ISR: Tenta atualizar os dados do GitHub a cada 1 hora.
+ * CONFIGURAÇÕES DE PERFORMANCE - NEXT.JS 15
+ * revalidate: 3600 -> ISR (Incremental Static Regeneration)
+ * O site é estático, mas o Next.js tenta atualizar os dados do GitHub em background 1x por hora.
  */
-export const dynamic = "force-static";
 export const revalidate = 3600;
 
 interface Props {
   params: Promise<{ lang: "pt" | "en" | "es" }>;
 }
 
-/** * 🔎 METADADOS DINÂMICOS (SEO)
- * Gerados no servidor para cada idioma.
+/** * 🔎 SEO DINÂMICO
  */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { lang } = await params;
@@ -34,8 +31,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   
   return {
     title: `Sérgio Santos | ${t.navigation.home}`,
-    description: t.portfolio.description,
+    description: t.meta.description, // Usando a descrição centralizada no i18n
     openGraph: {
+      title: `Sérgio Santos | ${t.navigation.home}`,
+      description: t.meta.description,
       images: [`/og-image-${lang}.png`],
       type: "website",
       locale: lang === "en" ? "en_US" : lang === "es" ? "es_ES" : "pt_BR",
@@ -47,40 +46,37 @@ export default async function Page({ params }: Props) {
   const { lang } = await params;
   const t = getDictionary(lang);
 
-  // Inicializa o objeto de repositórios para evitar quebras de renderização
-  let repos: Record<CategoryKey, GitHubRepo[]> = CATEGORIES_ORDER.reduce((acc, key) => {
-    acc[key] = [];
-    return acc;
-  }, {} as Record<CategoryKey, GitHubRepo[]>);
-
+  // Busca segura dos repositórios categorizados
+  let repos: Record<string, GitHubRepo[]> = {};
+  
   try {
-    const fetchedRepos = await getPortfolioRepos();
-    if (fetchedRepos && Object.keys(fetchedRepos).length > 0) {
-      repos = fetchedRepos as Record<CategoryKey, GitHubRepo[]>;
-    }
+    // getPortfolioRepos já retorna o objeto Record<CategoryKey, GitHubRepo[]>
+    repos = await getPortfolioRepos();
   } catch (error) {
-    // Log de erro no servidor (Vercel) para monitoramento
-    console.error("Erro ao carregar repositórios do GitHub:", error);
+    console.error("Falha ao carregar repositórios do GitHub:", error);
   }
 
+  // Verifica se há pelo menos um projeto em qualquer categoria
   const hasProjects = Object.values(repos).some(
-    (projects) => projects && projects.length > 0
+    (categoryList) => categoryList && categoryList.length > 0
   );
 
   return (
     <PageWrapper lang={lang}>
-      {/* Componente Hero com suporte a múltiplos idiomas */}
+      {/* Hero Section: Primeira dobra do site */}
       <HeroSection dict={t} lang={lang} />
 
-      <main role="main" className="space-y-32 pb-20 overflow-hidden">
+      <main role="main" className="space-y-24 md:space-y-32 pb-20">
         
-        {/* Seção Sobre Profissional (MDX Content) */}
+        {/* Perfil Profissional (Integrando o About do Bradesco/Experiência) */}
         <AboutSection locale={lang} />
 
-        {/* Destaque Principal do Portfólio */}
-        <FeaturedProject dict={t} />
+        {/* Case de Sucesso: Projeto de Predição de Risco (Destaque manual) */}
+        <section className="bg-slate-50 dark:bg-slate-900/30 py-16 md:py-24">
+          <FeaturedProject dict={t} />
+        </section>
 
-        {/* Artigo em Destaque: Autoridade Técnica */}
+        {/* Autoridade Técnica: Artigo Premiado na DIO */}
         <section 
           className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" 
           aria-labelledby="featured-article-title"
@@ -88,47 +84,47 @@ export default async function Page({ params }: Props) {
           <FeaturedArticleSection dict={t.sections} article={t.featuredArticle} />
         </section>
 
-        {/* Grid Dinâmico de Projetos (GitHub API) */}
+        {/* Portfólio de Engenharia: Dados dinâmicos do GitHub */}
         <section 
-          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" 
+          id="projects"
+          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24" 
           aria-labelledby="projects-title"
         >
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
-            <div>
-              <h2 id="projects-title" className="text-3xl md:text-4xl font-bold flex items-center gap-3">
-                <span role="img" aria-hidden="true" className="bg-blue-600 text-white p-2 rounded-xl text-2xl shadow-lg shadow-blue-500/20">
-                  📂
-                </span> 
+          <div className="text-center md:text-left mb-16">
+             <h2 id="projects-title" className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
                 {t.sections.projectsTitle}
-              </h2>
-              <p className="mt-4 text-slate-600 dark:text-slate-400 max-w-2xl">
-                {t.sections.projectsSubtitle || "Engenharia de dados, automação e arquitetura de software."}
-              </p>
-            </div>
+             </h2>
+             <div className="h-1.5 w-20 bg-blue-600 mt-4 mx-auto md:mx-0 rounded-full" />
+             <p className="mt-6 text-slate-600 dark:text-slate-400 max-w-2xl text-lg">
+                {t.portfolio.description}
+             </p>
           </div>
 
           {!hasProjects ? (
-            /* Estado Vazio: Se o GitHub não retornar nada ou houver erro no Token */
-            <div className="py-20 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl bg-slate-50/50 dark:bg-slate-900/20">
-              <p className="text-slate-500 text-lg italic">
-                {t.sections.projectsEmpty}
+            /* Fallback visual se a API falhar ou não houver tags 'portfolio' */
+            <div className="py-24 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[2rem] bg-slate-50/50 dark:bg-slate-900/10">
+              <p className="text-slate-400 text-lg font-medium">
+                {t.sections.projectsEmpty || "Conectando ao GitHub..."}
               </p>
             </div>
           ) : (
-            /* Renderização por Categorias Ordenadas */
-            <div className="space-y-24">
+            /* Renderiza as categorias conforme a CATEGORIES_ORDER */
+            <div className="space-y-32">
               {CATEGORIES_ORDER.map((key) => {
                 const projects = repos[key];
                 const categoryTitle = t.projectCategories[key];
 
+                // Só renderiza a seção se houver projetos para aquela categoria
                 if (!projects || projects.length === 0) return null;
 
                 return (
-                  <ProjectsSection 
-                    key={key}
-                    title={categoryTitle || key}
-                    projects={projects}
-                  />
+                  <div key={key} className="animate-in fade-in slide-in-from-bottom-10 duration-1000">
+                    <ProjectsSection 
+                      title={categoryTitle || key}
+                      projects={projects}
+                      lang={lang}
+                    />
+                  </div>
                 );
               })}
             </div>

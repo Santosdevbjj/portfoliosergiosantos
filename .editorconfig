@@ -9,18 +9,22 @@ indent_style = space
 indent_size = 2
 trim_trailing_whitespace = true
 
-[*.md]
+# Manter espaços em branco em arquivos Markdown (importante para quebras de linha do MD)
+[*.{md,mdx}]
 trim_trailing_whitespace = false
+indent_size = 2
 
+# Configurações específicas para linguagens de programação e web
 [*.{js,jsx,ts,tsx,json,yml,yaml,css,scss,html}]
 indent_style = space
 indent_size = 2
 
-[*.mdx]
-indent_style = space
-indent_size = 2
-
+# Scripts de terminal e automação
 [*.{sh,bash}]
 indent_style = space
 indent_size = 2
 insert_final_newline = true
+
+# Makefile e arquivos que exigem TABS (caso você use para automação de dados)
+[Makefile]
+indent_style = tab

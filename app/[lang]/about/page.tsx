@@ -2,31 +2,30 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import type { Metadata } from "next";
 import { getProjectBySlug, type Lang } from "@/lib/mdx";
+import { i18n } from "@/lib/i18n";
 
-// Reutilizamos getProjectBySlug, pois o padrão é slug único
-// Aqui o slug é "about"
+// Definindo o slug fixo para a página "Sobre"
+const ABOUT_SLUG = "about";
 
 interface PageProps {
-  params: { lang: Lang };
+  params: Promise<{ lang: Lang }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { lang } = params;
-  const about = await getProjectBySlug("about", lang);
+/** 🔎 SEO Dinâmico e Internacionalizado */
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const { lang } = await props.params;
+  const about = await getProjectBySlug(ABOUT_SLUG, lang);
 
   if (!about) {
-    return {
-      title: "Página não encontrada",
-      description: "Conteúdo indisponível.",
-    };
+    return { title: "Página não encontrada" };
   }
 
-  const baseUrl = "https://seusite.com";
+  const baseUrl = "https://portfoliosergiosantos.vercel.app";
   const path = "/about";
 
   return {
-    title: about.metadata.title,
-    description: about.metadata.description ?? "Biografia multilíngue de Sergio Santos",
+    title: `${about.metadata.title} | Sérgio Santos`,
+    description: about.metadata.description || "Biografia profissional e trajetória técnica.",
     alternates: {
       canonical: `${baseUrl}/${lang}${path}`,
       languages: {
@@ -37,29 +36,39 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     openGraph: {
       title: about.metadata.title,
-      description: about.metadata.description ?? "Biografia multilíngue de Sergio Santos",
+      description: about.metadata.description,
       url: `${baseUrl}/${lang}${path}`,
-      siteName: "Portfólio Sergio Santos",
+      siteName: "Portfólio Sérgio Santos",
       locale: lang === "en" ? "en_US" : lang === "es" ? "es_ES" : "pt_BR",
       type: "profile",
-      images: ["/og-image.png"],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: about.metadata.title,
-      description: about.metadata.description ?? "Biografia multilíngue de Sergio Santos",
-      images: ["/og-image.png"],
     },
   };
 }
 
-export default async function AboutPage({ params }: PageProps) {
-  const about = await getProjectBySlug("about", params.lang);
+/** 🚀 Gera os caminhos estáticos para cada idioma no build */
+export async function generateStaticParams() {
+  return i18n.locales.map((locale) => ({ lang: locale }));
+}
+
+export default async function AboutPage(props: PageProps) {
+  const { lang } = await props.params;
+  const about = await getProjectBySlug(ABOUT_SLUG, lang);
+
   if (!about) return notFound();
 
   return (
-    <article className="container py-10 space-y-6 prose prose-technical dark:prose-darkTechnical max-w-none">
-      <MDXRemote source={about.content} />
-    </article>
+    <main className="container mx-auto max-w-4xl px-4 py-12 md:py-20 min-h-screen">
+      <article 
+        className="
+          prose prose-slate dark:prose-invert 
+          prose-technical dark:prose-darkTechnical 
+          max-w-none 
+          prose-img:rounded-3xl prose-img:shadow-2xl
+          prose-headings:text-slate-900 dark:prose-headings:text-white
+        "
+      >
+        <MDXRemote source={about.content} />
+      </article>
+    </main>
   );
 }

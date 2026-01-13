@@ -17,21 +17,26 @@ export const dynamic = "force-static";
 export const revalidate = 3600;
 
 interface Props {
-  params: { lang: "pt" | "en" | "es" };
+  params: Promise<{ lang: "pt" | "en" | "es" }>; // Ajustado para Promise (Padrão Next.js 15)
 }
 
-/** 🔎 SEO Dinâmico: Altera o título da aba conforme o idioma */
+/** 🔎 SEO Dinâmico e Social Media */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const t = getDictionary(params.params ? params.params.lang : params.lang);
+  const { lang } = await params;
+  const t = getDictionary(lang);
+  
   return {
     title: `Sérgio Santos | ${t.sections.projectsTitle}`,
     description: t.portfolio.description,
+    openGraph: {
+      images: [`/og-image-${lang}.png`], // Link dinâmico para as imagens que você tem no /public
+    },
   };
 }
 
 export default async function Page({ params }: Props) {
-  // Garantia de acesso aos params (Next.js 14/15 pattern)
-  const lang = params.lang;
+  // Garantia de acesso aos params (Next.js 15 pattern)
+  const { lang } = await params;
   const t = getDictionary(lang);
 
   // Inicialização segura do estado de repositórios
@@ -47,7 +52,6 @@ export default async function Page({ params }: Props) {
     }
   } catch (error) {
     console.error("Erro ao carregar repositórios do GitHub:", error);
-    // O site continuará renderizando as outras seções mesmo sem os cards do GitHub
   }
 
   const categoryMap: Record<CategoryKey, string> = {
@@ -73,7 +77,8 @@ export default async function Page({ params }: Props) {
 
   return (
     <PageWrapper lang={lang}>
-      <HeroSection dict={t} />
+      {/* Sincronizado com as novas props do HeroSection */}
+      <HeroSection dict={t} lang={lang} />
 
       <main role="main" className="space-y-24 pb-20 mt-10">
         <FeaturedProject dict={t} />

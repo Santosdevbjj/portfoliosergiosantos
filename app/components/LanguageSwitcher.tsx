@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { Locale } from "@/lib/i18n";
 
@@ -18,6 +18,7 @@ interface LanguageSwitcherProps {
 export default function LanguageSwitcher({ lang, dict }: LanguageSwitcherProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -25,28 +26,32 @@ export default function LanguageSwitcher({ lang, dict }: LanguageSwitcherProps) 
     setOpen(false);
     if (!pathname) return;
 
-    // Salva a preferência no cookie para o Middleware respeitar no próximo acesso
+    // 🍪 Persistência da preferência para o Middleware
     document.cookie = `locale=${newLang};path=/;max-age=31536000;SameSite=Lax`;
 
     const segments = pathname.split("/").filter(Boolean);
 
-    // Se o primeiro segmento for um idioma conhecido, substitui
+    // Lógica robusta para troca de locale no path
     if (languages.some((l) => l.code === segments[0])) {
       segments[0] = newLang;
     } else {
-      // Caso a URL não tenha idioma (ex: /about), adiciona o novo
       segments.unshift(newLang);
     }
 
-    router.push("/" + segments.join("/"));
+    // Mantém os parâmetros de busca (?projeto=analise) ao trocar o idioma
+    const queryString = searchParams.toString();
+    const newPath = `/${segments.join("/")}${queryString ? `?${queryString}` : ""}`;
+
+    router.push(newPath);
   };
 
+  // Fechar o dropdown ao clicar fora
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setOpen(false);
       }
-    }
+    };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -60,43 +65,55 @@ export default function LanguageSwitcher({ lang, dict }: LanguageSwitcherProps) 
         onClick={() => setOpen((prev) => !prev)}
         className="
           flex items-center gap-2 px-3 py-2 
-          rounded-lg border border-slate-200 dark:border-slate-700
+          rounded-lg border border-slate-200 dark:border-slate-800
           bg-white dark:bg-slate-900 
-          text-sm font-medium text-slate-700 dark:text-slate-200
-          hover:bg-slate-50 dark:hover:bg-slate-800
+          text-sm font-semibold text-slate-700 dark:text-slate-200
+          hover:border-blue-500 dark:hover:border-blue-400
           transition-all duration-200 shadow-sm
         "
+        aria-haspopup="true"
         aria-expanded={open}
+        aria-label={dict.language}
       >
-        <span className="text-base">{currentLanguage.flag}</span>
-        <span className="hidden sm:inline">{currentLanguage.label}</span>
-        <svg className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
+        <span className="text-base leading-none">{currentLanguage.flag}</span>
+        <span className="hidden md:inline">{currentLanguage.label}</span>
+        <svg 
+          className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} 
+          viewBox="0 0 20 20" 
+          fill="currentColor"
+        >
           <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.25a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z" clipRule="evenodd" />
         </svg>
       </button>
 
       {open && (
         <div className="
-          absolute right-0 z-[100] mt-2 w-40
-          rounded-xl border border-slate-200 dark:border-slate-700
-          bg-white dark:bg-slate-900 shadow-xl
-          animate-in fade-in zoom-in duration-150
+          absolute right-0 z-[110] mt-2 w-44
+          rounded-xl border border-slate-200 dark:border-slate-800
+          bg-white/95 dark:bg-slate-900/95 backdrop-blur-md
+          shadow-xl ring-1 ring-black/5
+          animate-in fade-in zoom-in-95 duration-150
         ">
-          <ul className="p-1">
+          <ul className="p-1.5" role="menu">
             {languages.map((option) => (
-              <li key={option.code}>
+              <li key={option.code} role="none">
                 <button
+                  role="menuitem"
                   onClick={() => handleChange(option.code)}
                   className={`
-                    flex w-full items-center gap-3 px-3 py-2 text-sm rounded-lg
+                    flex w-full items-center gap-3 px-3 py-2.5 text-sm rounded-lg font-medium
+                    transition-colors
                     ${lang === option.code 
-                      ? "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" 
-                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                      ? "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400" 
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100"
                     }
                   `}
                 >
-                  <span>{option.flag}</span>
-                  {option.label}
+                  <span className="text-base">{option.flag}</span>
+                  <span className="flex-1 text-left">{option.label}</span>
+                  {lang === option.code && (
+                    <div className="h-1.5 w-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />
+                  )}
                 </button>
               </li>
             ))}

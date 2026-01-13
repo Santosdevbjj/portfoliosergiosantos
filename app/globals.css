@@ -2,102 +2,81 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Fonte otimizada via next/font (recomendado em vez de @import) */
-
-/* Tipografia base fluida */
-html {
-  font-family: 'Inter', sans-serif;
-  scroll-behavior: smooth;
-  font-size: clamp(14px, 1.5vw, 16px);
-  line-height: 1.6;
-  color-scheme: light dark;
-}
-
 @layer base {
+  :root {
+    /* Garante que o scroll considere o header fixo, se houver */
+    scroll-padding-top: 5rem;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Color-scheme ajuda o navegador a renderizar barras de rolagem nativas no dark mode */
+    color-scheme: light dark;
+  }
+
+  body {
+    /* Removida a fonte manual para usar a do next/font injetada no layout */
+    @apply transition-colors duration-300 antialiased;
+    @apply bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-50;
+    
+    /* Fallback caso as variáveis customizadas falhem */
+    line-height: 1.6;
+  }
+
+  /* Tipografia base fluida com clamp */
   h1 {
     @apply font-bold;
-    font-size: clamp(2rem, 5vw, 4rem);
+    font-size: clamp(2.25rem, 6vw, 4.5rem);
+    line-height: 1.1;
   }
+  
   h2 {
     @apply font-semibold;
-    font-size: clamp(1.5rem, 4vw, 3rem);
+    font-size: clamp(1.75rem, 4vw, 3rem);
+    line-height: 1.2;
   }
-  h3 {
-    @apply font-medium;
-    font-size: clamp(1.25rem, 3vw, 2rem);
-  }
+
   p {
-    font-size: clamp(0.875rem, 2.5vw, 1.125rem);
-    line-height: 1.6;
+    font-size: clamp(1rem, 2.5vw, 1.125rem);
   }
 }
 
 /* Gradientes animados globais */
-.animate-textGradient {
-  background: linear-gradient(90deg, #7f5af0, #f0a500, #ff61dc);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: textGradient 5s ease infinite;
+.animate-text-gradient {
+  @apply bg-clip-text text-transparent bg-300% animate-gradient-move;
+  background-image: linear-gradient(90deg, #7f5af0, #f0a500, #ff61dc);
 }
 
-@keyframes textGradient {
+@keyframes gradient-move {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
 }
 
-/* Body transições suaves dark/light */
-body {
-  @apply transition-colors duration-300 bg-surface-light text-gray-900 dark:bg-surface-dark dark:text-gray-100;
-  margin: 0;
-  padding: 0;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Seleção de texto */
+/* Seleção de texto - Use cores padrão se 'brand' não estiver no tailwind.config */
 ::selection {
-  background-color: theme('colors.brand.DEFAULT');
-  color: #fff;
+  @apply bg-blue-500/30 text-current;
 }
 
-/* Botões premium com acessibilidade */
-button {
-  @apply transition-transform duration-300 ease-in-out;
-}
-button:hover {
-  @apply scale-105;
-}
-button:focus-visible {
-  @apply outline-none ring-2 ring-offset-2 ring-primary;
-}
-
-/* Layout responsivo container */
-.container {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-}
-
-/* Imagens responsivas */
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* Links com transição */
-a {
-  @apply transition-colors duration-300;
-}
-a:hover {
-  @apply text-primary dark:text-primary-light;
-}
-
-/* Utilitários customizados */
+/* Acessibilidade e Interação */
 @layer components {
   .nav-link {
-    @apply text-sm font-medium text-gray-700 hover:text-primary dark:text-gray-200 dark:hover:text-primary-light transition-colors duration-200;
+    @apply text-sm font-medium transition-colors duration-200;
+    @apply text-slate-600 hover:text-blue-600 dark:text-slate-300 dark:hover:text-blue-400;
   }
+
   .btn-primary {
-    @apply px-4 py-2 rounded-md bg-primary text-white font-semibold hover:bg-primary-dark transition-colors duration-300;
+    @apply px-6 py-3 rounded-xl font-bold transition-all duration-300;
+    @apply bg-blue-600 text-white hover:bg-blue-700 hover:scale-105 active:scale-95;
+    @apply focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 outline-none;
   }
+  
+  /* Container padrão do projeto */
+  .main-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full;
+  }
+}
+
+/* Utilitários de imagem */
+img {
+  @apply max-w-full h-auto block;
 }

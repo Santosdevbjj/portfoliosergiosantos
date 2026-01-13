@@ -1,49 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getDictionary } from "@/lib/i18n";
-import type { Locale } from "@/lib/i18n";
+import { useTheme } from "@/hooks/useTheme";
+import type { Translations } from "@/lib/i18n";
 
 interface Props {
-  lang: Locale;
+  // Passamos apenas a parte necessária do dicionário para manter o componente leve
+  dict: Translations["theme"];
 }
 
-type Theme = "light" | "dark";
+export default function DarkModeToggle({ dict }: Props) {
+  // Consumimos o estado global que já lida com Cookies, LocalStorage e DOM
+  const { isDark, toggleTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-export default function DarkModeToggle({ lang }: Props) {
-  const dict = getDictionary(lang);
-
-  const [theme, setTheme] = useState<Theme>("light");
-
-  // Inicialização segura no client
+  // Essencial para evitar erros de hidratação no Next.js 15
   useEffect(() => {
-    const stored = localStorage.getItem("theme") as Theme | null;
-
-    if (stored) {
-      setTheme(stored);
-    } else {
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      setTheme(prefersDark ? "dark" : "light");
-    }
+    setMounted(true);
   }, []);
 
-  // Aplica tema no DOM e persiste
-  useEffect(() => {
-    const isDark = theme === "dark";
-    document.documentElement.classList.toggle("dark", isDark);
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+  if (!mounted) {
+    // Retornamos um esqueleto ou espaço vazio para evitar que o layout "pule"
+    return <div className="w-10 h-10 sm:w-32 p-2" />;
+  }
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
-
-  const isDark = theme === "dark";
-  const label = isDark
-    ? dict.theme.themeLight
-    : dict.theme.themeDark;
+  const label = isDark ? dict.themeLight : dict.themeDark;
 
   return (
     <div className="flex items-center">
@@ -51,28 +32,27 @@ export default function DarkModeToggle({ lang }: Props) {
         type="button"
         onClick={toggleTheme}
         aria-label={label}
-        aria-pressed={isDark}
-        aria-live="polite"
         title={label}
         className="
-          flex items-center gap-2
+          group flex items-center gap-2
           px-3 sm:px-4 py-2
-          rounded-md
-          bg-gray-200 dark:bg-gray-700
-          text-gray-900 dark:text-gray-100
-          transition-colors duration-300
-          text-sm sm:text-base font-medium
-          hover:bg-gray-300 dark:hover:bg-gray-600
-          focus:outline-none
-          focus:ring-2 focus:ring-offset-2
-          focus:ring-blue-500
+          rounded-lg
+          bg-slate-100 dark:bg-slate-800
+          text-slate-900 dark:text-slate-100
+          border border-slate-200 dark:border-slate-700
+          transition-all duration-300
+          text-sm font-semibold
+          hover:border-blue-500 dark:hover:border-blue-400
+          focus:outline-none focus:ring-2 focus:ring-blue-500/50
         "
       >
-        <span className="text-lg">
+        {/* Ícone com transição de escala para um toque mais profissional */}
+        <span className="text-lg transition-transform group-hover:scale-110">
           {isDark ? "☀️" : "🌙"}
         </span>
 
-        <span className="hidden sm:inline">
+        {/* Label visível apenas em telas maiores para economizar espaço na Navbar */}
+        <span className="hidden md:inline whitespace-nowrap">
           {label}
         </span>
       </button>

@@ -2,114 +2,100 @@
 @tailwind components;
 @tailwind utilities;
 
-/* =========================================
-   Base: reset, tipografia e multilíngue
-   ========================================= */
 @layer base {
   *, *::before, *::after { box-sizing: border-box; }
 
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
-  }
-
-  /* Fontes multilíngues */
-  html[lang="en"] body {
-    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-  }
-  html[lang="pt"] body {
-    font-family: "Roboto", system-ui, -apple-system, Segoe UI, Inter, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-  }
-  html[lang="es"] body {
-    font-family: "Nunito", system-ui, -apple-system, Segoe UI, Inter, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    /* Garante que o fundo não "pisque" no carregamento */
+    @apply bg-white dark:bg-slate-950;
   }
 
   body {
-    @apply bg-white text-gray-900 dark:bg-slate-950 dark:text-gray-100 antialiased transition-colors duration-300;
+    /* Removi a troca de fontes por lang aqui para não conflitar com o Next.js Fonts */
+    @apply text-slate-900 dark:text-slate-100 antialiased transition-colors duration-300;
     line-height: 1.6;
   }
 
-  ::selection { background-color: #6366f1; color: #fff; }
-
-  /* Tipografia fluida */
-  h1 { @apply font-bold tracking-tight text-gray-900 dark:text-gray-100; font-size: clamp(2rem, 5vw, 4rem); }
-  h2 { @apply font-semibold tracking-tight text-gray-900 dark:text-gray-100; font-size: clamp(1.5rem, 4vw, 3rem); }
-  h3 { @apply font-semibold text-gray-900 dark:text-gray-100; font-size: clamp(1.25rem, 3vw, 2rem); }
-  h4 { @apply font-medium text-gray-900 dark:text-gray-100; }
-  h5 { @apply font-medium text-gray-900 dark:text-gray-100; }
-  h6 { @apply font-medium text-gray-900 dark:text-gray-100; }
-
-  p { @apply text-base text-gray-700 dark:text-gray-300; }
-
-  a { @apply text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 underline-offset-2 hover:underline; }
-
-  ul, ol { @apply pl-6; }
-
-  code, pre { @apply font-mono text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded; }
-  pre { @apply p-4 overflow-x-auto; }
-
-  .container { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
-}
-
-/* =========================================
-   Componentes
-   ========================================= */
-@layer components {
-  .site-header { @apply w-full border-b border-gray-200 bg-white dark:bg-slate-950 dark:border-gray-700; }
-  .site-footer { @apply w-full border-t border-gray-200 bg-white dark:bg-slate-950 dark:border-gray-700; }
-
-  .bar { @apply container flex items-center justify-between py-3; }
-
-  .nav { @apply hidden md:flex space-x-6; }
-  .nav-link { @apply text-sm font-medium text-gray-700 hover:text-indigo-600 dark:text-gray-200 dark:hover:text-indigo-400; }
-
-  .nav-mobile { @apply md:hidden flex justify-center border-t border-gray-200 dark:border-gray-700 py-2; }
-
-  .btn { @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500; }
-  .btn-primary { @apply btn bg-indigo-600 text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600; }
-  .btn-secondary { @apply btn bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700; }
-  .btn-outline { @apply btn border border-gray-300 bg-transparent text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700; }
-
-  .card { @apply rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-950 shadow-sm; }
-  .card-body { @apply p-4 sm:p-6; }
-  .card-title { @apply text-lg font-semibold text-gray-900 dark:text-gray-100; }
-  .card-text { @apply text-sm text-gray-700 dark:text-gray-300; }
-  .card-article { @apply card prose prose-technical dark:prose-darkTechnical; }
-
-  .lang-switcher { @apply relative inline-block text-left; }
-  .lang-button { @apply inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600; }
-  .lang-menu { @apply absolute right-0 mt-2 w-40 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800; }
-  .lang-item { @apply block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700; }
-  .lang-item-active { @apply bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200; }
-
-  .section { @apply container py-6 sm:py-8 lg:py-10; }
-  .section-title { @apply mb-4 sm:mb-6 text-2xl sm:text-3xl font-bold; }
-  .section-subtitle { @apply mb-3 text-gray-600 dark:text-gray-400; }
-}
-
-/* =========================================
-   Utilities
-   ========================================= */
-@layer utilities {
-  .flex-center { @apply flex items-center justify-center; }
-  .grid-responsive { @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6; }
-  .text-muted { @apply text-gray-600 dark:text-gray-400; }
-  .divider { @apply border-t border-gray-200 dark:border-gray-700; }
-
-  /* Acessibilidade */
-  .sr-only {
-    @apply absolute w-px h-px p-0 m-0 overflow-hidden whitespace-nowrap border-0;
-    clip: rect(0, 0, 0, 0);
+  ::selection { 
+    @apply bg-blue-500/30 text-blue-900 dark:text-white; 
   }
-  .truncate-text { @apply overflow-hidden text-ellipsis whitespace-nowrap; }
+
+  /* Tipografia fluida e moderna */
+  h1, h2, h3, h4, h5, h6 { 
+    @apply font-bold tracking-tighter text-slate-900 dark:text-white; 
+  }
+  
+  h1 { font-size: clamp(2.5rem, 8vw, 4.5rem); }
+  h2 { font-size: clamp(1.8rem, 5vw, 3rem); }
+  h3 { font-size: clamp(1.5rem, 3vw, 2rem); }
+
+  p { @apply leading-relaxed text-slate-600 dark:text-slate-400; }
+
+  /* Links consistentes com o tema Azul */
+  a { 
+    @apply text-blue-600 dark:text-blue-400 transition-colors duration-200 no-underline; 
+  }
+  
+  a:hover { @apply text-blue-700 dark:text-blue-300; }
+
+  /* Scrollbar customizada para Dark Mode */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 dark:bg-slate-800 rounded-full border-4 border-transparent bg-clip-content;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400 dark:bg-slate-700;
+  }
 }
 
-/* =========================================
-   Variantes responsivas adicionais por breakpoint
-   ========================================= */
-@screen sm {
-  .bar { @apply py-4; }
+@layer components {
+  /* Utilitários de Container para evitar repetição */
+  .section-container {
+    @apply mx-auto max-w-7xl px-6 lg:px-8 py-16 sm:py-24;
+  }
+
+  /* Estilos de Botão Padronizados */
+  .btn-base {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-all active:scale-95 disabled:opacity-50;
+  }
+  
+  .btn-primary {
+    @apply btn-base bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/20;
+  }
+
+  .btn-ghost {
+    @apply btn-base text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800;
+  }
+
+  /* Cards com efeito de Glassmorphism */
+  .glass-card {
+    @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-sm;
+  }
 }
-@screen lg {
-  .bar { @apply py-5; }
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Animação suave para entrada de conteúdo */
+  .fade-up {
+    animation: fadeUp 0.5s ease-out forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 }

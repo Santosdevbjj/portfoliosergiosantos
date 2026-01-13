@@ -1,12 +1,12 @@
-// app/[lang]/layout.tsx
 import "@/app/globals.css";
 import { Inter } from "next/font/google";
 import { Locale, i18n } from "@/lib/i18n";
 import { Metadata, Viewport } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const inter = Inter({ subsets: ["latin"] });
 
-// No Next.js 15, o viewport é exportado separadamente para melhor performance
+/** 📱 Configuração de Viewport (Padrão Next.js 15) */
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -18,10 +18,10 @@ export const viewport: Viewport = {
 
 interface Props {
   children: React.ReactNode;
-  params: Promise<{ lang: Locale }>; // No Next.js 15, params é uma Promise
+  params: Promise<{ lang: Locale }>;
 }
 
-/* 🔎 Gerador de Metadados Dinâmicos para SEO */
+/** 🔎 SEO Dinâmico e Internacionalização (Hreflang) */
 export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
   const { lang } = await params;
   
@@ -41,19 +41,15 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
   };
 
   const current = content[lang] || content.en;
-  const baseUrl = "https://seu-dominio.com"; // Substitua pelo seu domínio real
+  const baseUrl = "https://portfoliosergiosantos.vercel.app";
 
   return {
     title: {
       default: current.title,
-      template: `%s | Sérgio Santos` // Permite que páginas internas como /projects mudem o título automaticamente
+      template: `%s | Sérgio Santos`
     },
     description: current.description,
     metadataBase: new URL(baseUrl),
-    robots: {
-      index: true,
-      follow: true,
-    },
     alternates: {
       canonical: `/${lang}`,
       languages: {
@@ -78,15 +74,21 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
         },
       ],
     },
+    robots: {
+      index: true,
+      follow: true,
+    },
   };
 }
 
-/* 🚀 Função para gerar os caminhos estáticos no build */
+/** 🚀 Geração de Caminhos Estáticos para os Idiomas */
 export async function generateStaticParams() {
   return i18n.locales.map((locale) => ({ lang: locale }));
 }
 
+/** 🏗️ Estrutura Raiz do Layout */
 export default async function RootLayout({ children, params }: Props) {
+  // No Next.js 15, params precisa ser aguardado (await)
   const { lang } = await params;
 
   return (
@@ -94,7 +96,14 @@ export default async function RootLayout({ children, params }: Props) {
       <body
         className={`${inter.className} bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 antialiased min-h-screen flex flex-col`}
       >
+        {/* O conteúdo das páginas (Navbar, Main, Footer) é renderizado aqui */}
         {children}
+
+        {/* 📊 Google Analytics 4 (Carregamento Otimizado) 
+            Certifique-se de configurar NEXT_PUBLIC_GA_ID no seu .env ou Vercel */}
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        )}
       </body>
     </html>
   );

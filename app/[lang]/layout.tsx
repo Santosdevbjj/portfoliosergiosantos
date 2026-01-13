@@ -1,115 +1,59 @@
 // app/[lang]/layout.tsx
-import type { ReactNode } from "react";
-import { getDictionary, type Locale } from "@/lib/i18n";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import "@/app/globals.css";
+import { Inter } from "next/font/google";
+import { Locale, i18n } from "@/lib/i18n";
+import { Metadata } from "next";
 
-interface LayoutProps {
-  children: ReactNode;
+const inter = Inter({ subsets: ["latin"] });
+
+interface Props {
+  children: React.ReactNode;
   params: { lang: Locale };
 }
 
-/* ========= SEO / METADATA ========= */
-export async function generateMetadata({
-  params,
-}: {
-  params: { lang: Locale };
-}) {
-  const { lang } = params;
-  const dict = await getDictionary(lang);
-  const baseUrl = "https://portfoliosergiosantos.vercel.app";
+/* 🔎 Gerador de Metadados Dinâmicos para SEO */
+export async function generateMetadata({ params }: { params: { lang: Locale } }): Promise<Metadata> {
+  const isPt = params.lang === "pt";
+  const isEs = params.lang === "es";
+
+  const title = isPt 
+    ? "Sérgio Santos | Especialista em Dados e Software" 
+    : isEs 
+      ? "Sérgio Santos | Especialista en Datos y Software"
+      : "Sérgio Santos | Data & Software Specialist";
+
+  const description = isPt
+    ? "Portfólio de engenharia de dados, IA e desenvolvimento de software."
+    : "Portfolio de ingeniería de datos, IA y desarrollo de software.";
 
   return {
-    title: dict.meta.title,
-    description: dict.meta.description,
-    metadataBase: new URL(baseUrl),
+    title,
+    description,
+    viewport: "width=device-width, initial-scale=1",
+    robots: "index, follow",
     alternates: {
-      canonical: `/${lang}`,
       languages: {
-        pt: "/pt",
-        en: "/en",
-        es: "/es",
+        "pt-BR": "/pt",
+        "en-US": "/en",
+        "es-ES": "/es",
       },
-    },
-    openGraph: {
-      title: dict.meta.title,
-      description: dict.meta.description,
-      url: `${baseUrl}/${lang}`,
-      siteName: "Sérgio Santos Portfolio",
-      locale:
-        lang === "pt" ? "pt_BR" : lang === "en" ? "en_US" : "es_ES",
-      type: "website",
-      images: [
-        {
-          url: `/og-image-${lang}.png`,
-          width: 1200,
-          height: 630,
-          alt: dict.meta.title,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: dict.meta.title,
-      description: dict.meta.description,
     },
   };
 }
 
-/* ========= LAYOUT ========= */
-export default async function LangLayout({
-  children,
-  params,
-}: LayoutProps) {
-  const { lang } = params;
-  const dict = await getDictionary(lang);
+/* 🚀 Função para gerar os caminhos estáticos no build */
+export async function generateStaticParams() {
+  return i18n.locales.map((locale) => ({ lang: locale }));
+}
 
+export default function RootLayout({ children, params }: Props) {
   return (
-    <html lang={lang} suppressHydrationWarning>
-      <head>
-        {/* Dark mode early hydration fix */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-(function () {
-  try {
-    const storedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const shouldUseDark =
-      storedTheme === "dark" || (!storedTheme && prefersDark);
-
-    if (shouldUseDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  } catch (_) {}
-})();
-            `,
-          }}
-        />
-      </head>
-
-      <body className="min-h-screen flex flex-col bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased transition-colors duration-300">
-        {/* Header */}
-        <Header lang={lang} dict={dict.navigation} />
-
-        {/* Conteúdo */}
-        <main
-          role="main"
-          className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6"
-        >
-          {children}
-        </main>
-
-        {/* Footer */}
-        <Footer
-          lang={lang}
-          dict={{
-            ...dict.navigation,
-            ...dict.footer,
-          }}
-        />
+    <html lang={params.lang} className="scroll-smooth">
+      <body
+        className={`${inter.className} bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 antialiased min-h-screen flex flex-col`}
+      >
+        {/* O PageWrapper (que contém Navbar e Footer) será renderizado dentro do children em page.tsx */}
+        {children}
       </body>
     </html>
   );

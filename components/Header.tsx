@@ -3,82 +3,61 @@
 import { useState } from "react";
 import Link from "next/link";
 import LanguageSwitcher from "./LanguageSwitcher";
-import { getDictionary, DEFAULT_LOCALE } from "@/lib/i18n";
+import { getDictionary, Locale } from "@/lib/i18n";
 
-type HeaderProps = {
-  locale?: string;
-};
+interface HeaderProps {
+  lang: Locale;
+}
 
-export default function Header({ locale = DEFAULT_LOCALE }: HeaderProps) {
+export default function Header({ lang }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const dict = getDictionary(locale);
+  
+  // Usando a função síncrona e o tipo correto
+  const dict = getDictionary(lang);
 
   return (
-    <header className="border-b border-gray-200 dark:border-gray-700 bg-surface-light dark:bg-surface-dark">
+    <header className="sticky top-0 z-[100] border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between py-4">
         {/* Logo */}
         <Link
-          href={`/${locale}`}
-          className="text-xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent"
-          aria-label={dict.navigation.home}
+          href={`/${lang}`}
+          className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"
         >
-          Sergio Santos
+          Sérgio Santos
         </Link>
 
         {/* Menu desktop */}
-        <nav
-          className="hidden md:flex gap-6 items-center"
-          role="navigation"
-          aria-label={dict.navigation.menu}
-        >
-          <Link
-            href={`/${locale}/projects`}
-            className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition"
-          >
+        <nav className="hidden md:flex gap-8 items-center">
+          <Link href={`/${lang}`} className="text-sm font-medium hover:text-blue-600 transition">
+            {dict.navigation.home}
+          </Link>
+          <Link href="#projects-title" className="text-sm font-medium hover:text-blue-600 transition">
             {dict.navigation.projects}
           </Link>
-          <Link
-            href={`/${locale}/about`}
-            className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition"
+          <a 
+            href={dict.cv.url} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-sm font-medium hover:text-blue-600 transition"
           >
-            {dict.navigation.about}
-          </Link>
-          <Link
-            href={`/${locale}/contact`}
-            className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition"
-          >
-            {dict.navigation.contact}
-          </Link>
-          <LanguageSwitcher />
+            Curriculum
+          </a>
+          
+          {/* Passando as props obrigatórias para o Switcher */}
+          <LanguageSwitcher lang={lang} dict={dict.navigation} />
         </nav>
 
         {/* Botão hamburguer (mobile) */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
-          aria-label={isOpen ? dict.navigation.closeMenu : dict.navigation.openMenu}
+          className="md:hidden p-2 text-slate-600 dark:text-slate-300"
           aria-expanded={isOpen}
         >
-          <svg
-            className="h-6 w-6 text-gray-800 dark:text-gray-200"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {isOpen ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             )}
           </svg>
         </button>
@@ -86,31 +65,15 @@ export default function Header({ locale = DEFAULT_LOCALE }: HeaderProps) {
 
       {/* Menu mobile dropdown */}
       {isOpen && (
-        <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-surface-light dark:bg-surface-dark">
-          <nav
-            className="flex flex-col gap-4 p-4"
-            role="navigation"
-            aria-label={dict.navigation.menu}
-          >
-            <Link
-              href={`/${locale}/projects`}
-              className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition"
-            >
+        <div className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 space-y-4">
+          <nav className="flex flex-col gap-4">
+            <Link href={`/${lang}`} className="text-base font-medium" onClick={() => setIsOpen(false)}>
+              {dict.navigation.home}
+            </Link>
+            <Link href="#projects-title" className="text-base font-medium" onClick={() => setIsOpen(false)}>
               {dict.navigation.projects}
             </Link>
-            <Link
-              href={`/${locale}/about`}
-              className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition"
-            >
-              {dict.navigation.about}
-            </Link>
-            <Link
-              href={`/${locale}/contact`}
-              className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition"
-            >
-              {dict.navigation.contact}
-            </Link>
-            <LanguageSwitcher />
+            <LanguageSwitcher lang={lang} dict={dict.navigation} />
           </nav>
         </div>
       )}

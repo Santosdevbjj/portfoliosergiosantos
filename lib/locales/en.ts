@@ -37,6 +37,10 @@ export const en: Dictionary = {
     differentialTitle: "⭐ Professional Differentiator",
     objectiveTitle: "🎯 Objective",
 
+    // ✅ Match with page.tsx requirements
+    stackConsolidated: "Core Technologies",
+    stackUpdating: "Upskilling / Current Projects",
+
     projectsTitle: "🛠 Project Portfolio",
     articlesTitle: "📝 Technical Publications",
     featuredArticle: "Award-Winning Article",
@@ -47,6 +51,7 @@ export const en: Dictionary = {
     filtersTitle: "Categories",
     projectsGridTitle: "Project List",
     noProjectsFound: "No projects found for this search.",
+    projectsEmpty: "Loading projects from GitHub or no projects found with the 'portfolio' tag...",
   },
 
   portfolio: {
@@ -103,6 +108,10 @@ export const en: Dictionary = {
       "Rare ability to integrate governance of critical systems with artificial intelligence solutions.",
     objective:
       "Seeking opportunities in projects where operational efficiency, data quality, and risk reduction are strategic priorities.",
+    
+    // ✅ Match with Skills component in page.tsx
+    stackConsolidated: "Windows Server, SQL Server, C#, .NET, IT Governance, Data Security.",
+    stackUpdating: "Python, Azure Databricks, Apache Spark, Neo4j, Machine Learning, Power BI.",
   },
 
   projectCategories: {

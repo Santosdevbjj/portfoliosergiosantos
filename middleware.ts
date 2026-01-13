@@ -4,39 +4,32 @@ import type { NextRequest } from "next/server";
 import Negotiator from "negotiator";
 import { match as matchLocale } from "@formatjs/intl-localematcher";
 
-/**
- * Idiomas suportados
- */
-const locales = ["en", "pt", "es"] as const;
+const locales = ["pt", "en", "es"] as const; // PT como primeiro para consistência
 const defaultLocale = "pt";
 
-/**
- * Detecta o locale:
- * 1. Cookie
- * 2. Accept-Language
- */
 function getLocale(request: NextRequest): string {
+  // 1. Tenta pegar do Cookie (usuário já escolheu antes)
   const cookieLocale = request.cookies.get("locale")?.value?.toLowerCase();
-
-  if (cookieLocale && locales.includes(cookieLocale as any)) {
+  if (cookieLocale && (locales as unknown as string[]).includes(cookieLocale)) {
     return cookieLocale;
   }
 
+  // 2. Tenta detectar do Navegador
   const headers: Record<string, string> = {};
   request.headers.forEach((value, key) => {
     headers[key] = value;
   });
 
-  const languages = new Negotiator({ headers }).languages();
-  return matchLocale(languages, [...locales], defaultLocale);
+  try {
+    const languages = new Negotiator({ headers }).languages();
+    return matchLocale(languages, [...locales], defaultLocale);
+  } catch (e) {
+    return defaultLocale;
+  }
 }
 
-/**
- * Log externo opcional (não bloqueante)
- */
 async function sendLog(locale: string, pathname: string, theme: string) {
   if (!process.env.LOGTAIL_TOKEN) return;
-
   try {
     await fetch("https://in.logtail.com/", {
       method: "POST",
@@ -51,72 +44,57 @@ async function sendLog(locale: string, pathname: string, theme: string) {
         timestamp: new Date().toISOString(),
       }),
     });
-  } catch {
-    // nunca quebra o middleware
+  } catch (error) {
+    // Fail silent
   }
 }
 
-/**
- * Middleware principal
- */
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const theme = request.cookies.get("theme")?.value ?? "system";
 
-  /**
-   * Exclusões explícitas (SEM regex)
-   */
+  // Exclusões para não processar arquivos estáticos e API
   if (
     pathname.startsWith("/api") ||
     pathname.startsWith("/_next") ||
     pathname === "/favicon.ico" ||
-    pathname === "/sw.js" ||
-    pathname.endsWith(".png") ||
-    pathname.endsWith(".jpg") ||
-    pathname.endsWith(".jpeg") ||
-    pathname.endsWith(".svg") ||
-    pathname.endsWith(".webp") ||
-    pathname.endsWith(".gif") ||
-    pathname.endsWith(".ico") ||
-    pathname.endsWith(".pdf")
+    pathname.match(/\.(png|jpg|jpeg|svg|webp|gif|ico|pdf)$/)
   ) {
     return NextResponse.next();
   }
 
-  /**
-   * Verifica se já existe locale na URL
-   */
-  const hasLocale = locales.some(
-    (locale) =>
-      pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)
+  // Verifica se a URL já começa com um dos locales suportados
+  const pathnameHasLocale = locales.some(
+    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   );
 
-  if (!hasLocale) {
+  if (!pathnameHasLocale) {
     const locale = getLocale(request);
+    
+    // Log assíncrono
+    if (process.env.LOGTAIL_TOKEN) {
+        sendLog(locale, pathname, theme).catch(() => {});
+    }
 
-    sendLog(locale, pathname, theme).catch(() => {});
-
+    // Redireciona para o idioma detectado (ex: /projeto -> /pt/projeto)
     return NextResponse.redirect(
-      new URL(`/${locale}${pathname === "/" ? "" : pathname}`, request.url)
+      new URL(`/${locale}${pathname.startsWith("/") ? "" : "/"}${pathname}`, request.url)
     );
   }
 
-  /**
-   * Headers auxiliares
-   */
   const response = NextResponse.next();
-  const currentLocale = pathname.split("/")[1] ?? defaultLocale;
+  const currentLocale = pathname.split("/")[1] || defaultLocale;
 
+  // Injeta headers para facilitar o uso nos Server Components
   response.headers.set("x-theme", theme);
   response.headers.set("x-locale", currentLocale);
 
   return response;
 }
 
-/**
- * Matcher SIMPLES e seguro
- * (o filtro real acontece dentro do código)
- */
 export const config = {
-  matcher: ["/:path*"],
+  matcher: [
+    // Ignora caminhos internos do Next.js e arquivos na pasta public
+    "/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js).*)",
+  ],
 };

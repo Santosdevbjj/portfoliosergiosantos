@@ -1,14 +1,21 @@
 import { MetadataRoute } from "next";
 import { i18n } from "@/lib/i18n";
+import { getAllProjects } from "@/lib/mdx"; // Importando para indexar conteúdos MDX
 
-const baseUrl = "https://portfoliosergiosantos.vercel.app"; 
+const baseUrl = "https://portfoliosergiosantos.vercel.app";
 const locales = i18n.locales;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const routes: MetadataRoute.Sitemap = [];
 
-  // 1. Páginas Principais (Home)
-  // Como agora o conteúdo principal está na raiz de cada idioma
+  // Mapeamento de idiomas para o padrão hreflang
+  const languagesMap = {
+    pt: `${baseUrl}/pt`,
+    en: `${baseUrl}/en`,
+    es: `${baseUrl}/es`,
+  };
+
+  // 1. Páginas Principais (Home) para cada idioma
   for (const lang of locales) {
     routes.push({
       url: `${baseUrl}/${lang}`,
@@ -16,21 +23,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 1,
       alternates: {
-        languages: {
-          "pt-BR": `${baseUrl}/pt`,
-          "en-US": `${baseUrl}/en`,
-          "es-ES": `${baseUrl}/es`,
-        },
+        languages: languagesMap,
       },
     });
   }
 
-  /**
-   * NOTA: Se você tiver páginas de projetos individuais carregadas via slug,
-   * você deve buscar os slugs do GitHub ou MDX aqui e dar o push no array 'routes'.
-   * Se os seus projetos apenas abrem o link externo do GitHub (como no ProjectCard),
-   * eles NÃO devem estar no seu sitemap, pois o sitemap lista apenas as suas URLs internas.
-   */
+  // 2. Indexação de Projetos MDX (Dinâmico)
+  // Isso garante que se você criar /pt/projects/analise-dados, o Google o encontre
+  try {
+    for (const lang of locales) {
+      const projects = await getAllProjects(lang);
+      
+      projects.forEach((project) => {
+        routes.push({
+          url: `${baseUrl}/${lang}/projects/${project.slug}`,
+          lastModified: project.metadata.date ? new Date(project.metadata.date) : new Date(),
+          changeFrequency: "monthly",
+          priority: 0.8,
+          alternates: {
+            languages: {
+              pt: `${baseUrl}/pt/projects/${project.slug}`,
+              en: `${baseUrl}/en/projects/${project.slug}`,
+              es: `${baseUrl}/es/projects/${project.slug}`,
+            },
+          },
+        });
+      });
+    }
+  } catch (error) {
+    console.error("Erro ao gerar sitemap para projetos:", error);
+  }
 
   return routes;
 }

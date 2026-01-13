@@ -4,12 +4,12 @@
   "redirects": [
     {
       "source": "/old-projects/:path*",
-      "destination": "/pt/projects/:path*",
+      "destination": "/projects/:path*",
       "permanent": true
     },
     {
       "source": "/blog",
-      "destination": "/pt/projects/list",
+      "destination": "/projects",
       "permanent": false
     }
   ],
@@ -43,6 +43,10 @@
         {
           "key": "Cross-Origin-Opener-Policy",
           "value": "same-origin"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://avatars.githubusercontent.com; connect-src 'self' https://in.logtail.com https://api.github.com;"
         }
       ]
     }

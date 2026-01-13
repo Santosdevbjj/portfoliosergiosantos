@@ -1,0 +1,13 @@
+---
+title: "Lógica de Grafos com Neo4j"
+date: "2024-05-20"
+category: "Database"
+---
+
+## Introdução
+Neste artigo, exploramos como a estrutura de grafos otimiza consultas complexas em comparação ao SQL tradicional.
+
+```python
+# Exemplo de consulta em Python
+def get_recommendations(user_id):
+    return driver.execute_query("MATCH (u:User)-[:LIKES]->(m) RETURN m")

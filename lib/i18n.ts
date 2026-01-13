@@ -1,15 +1,19 @@
-/* ========= LOCALES ========= */
+/* ================== LOCALES ================== */
+
 export const SUPPORTED_LOCALES = ["pt", "en", "es"] as const;
 
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
 
-/* ========= DICTIONARY ========= */
+/* ================= DICTIONARY ================= */
+
 export type Dictionary = {
+  /* ---------- SEO / META ---------- */
   meta: {
     title: string;
     description: string;
   };
 
+  /* ---------- NAVIGATION ---------- */
   navigation: {
     home: string;
     about: string;
@@ -20,29 +24,38 @@ export type Dictionary = {
     closeMenu: string;
   };
 
+  /* ---------- FOOTER ---------- */
   footer: {
     rights: string;
   };
 
+  /* ---------- THEME ---------- */
   darkMode: {
     lightMode: string;
     darkMode: string;
   };
 
+  /* ---------- SECTIONS ---------- */
   sections: {
     aboutTitle: string;
     aboutIntro: string;
     aboutDetails: string;
+
     experienceTitle: string;
     reskillingTitle: string;
     differentialTitle: string;
     objectiveTitle: string;
+
+    /* Stack labels */
+    stackConsolidated: string;
+    stackUpdating: string;
 
     projectsTitle: string;
     articlesTitle: string;
     featuredArticle: string;
     contactTitle: string;
 
+    /* Portfolio / Grid */
     searchPlaceholder: string;
     searchLabel: string;
     filtersTitle: string;
@@ -50,6 +63,7 @@ export type Dictionary = {
     noProjectsFound: string;
   };
 
+  /* ---------- HERO / PORTFOLIO ---------- */
   portfolio: {
     title: string;
     description: string;
@@ -57,13 +71,16 @@ export type Dictionary = {
     projects: string;
   };
 
+  /* ---------- CV ---------- */
   cv: {
     url: string;
     label: string;
   };
 
+  /* ---------- SOCIAL ---------- */
   socialImage: string;
 
+  /* ---------- FEATURED ARTICLE ---------- */
   featuredArticle: {
     title: string;
     description: string;
@@ -77,6 +94,7 @@ export type Dictionary = {
     };
   };
 
+  /* ---------- FEATURED PROJECT ---------- */
   featuredProject: {
     title: string;
     problem: string;
@@ -85,6 +103,7 @@ export type Dictionary = {
     result: string;
   };
 
+  /* ---------- EXPERIENCE ---------- */
   experience: {
     item1: string;
     item2: string;
@@ -94,6 +113,7 @@ export type Dictionary = {
     objective: string;
   };
 
+  /* ---------- PROJECT CATEGORIES ---------- */
   projectCategories: {
     dataScience: string;
     azureDatabricks: string;

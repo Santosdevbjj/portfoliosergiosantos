@@ -22,18 +22,25 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const lang = params.lang;
+  
+  // 1. Chamada síncrona conforme o novo lib/i18n.ts
   const t = getDictionary(lang);
 
-  // Busca e categoriza repositórios (agora alinhado com o lib/github.ts novo)
-  let repos: Record<CategoryKey, GitHubRepo[]> = {} as any;
+  // 2. Inicialização segura do objeto de repositórios
+  let repos: Record<CategoryKey, GitHubRepo[]> = {} as Record<CategoryKey, GitHubRepo[]>;
+  CATEGORIES_ORDER.forEach(key => repos[key] = []);
 
   try {
-    repos = await getPortfolioRepos();
+    // 3. Busca os dados do GitHub
+    const fetchedRepos = await getPortfolioRepos();
+    if (fetchedRepos && Object.keys(fetchedRepos).length > 0) {
+      repos = fetchedRepos;
+    }
   } catch (error) {
     console.error("Erro ao carregar repositórios do GitHub:", error);
   }
 
-  // Mapeamento correto com as chaves CamelCase do lib/github.ts
+  // Mapeamento das categorias traduzidas
   const categoryMap: Record<CategoryKey, string> = {
     dataScience: t.projectCategories.dataScience,
     azureDatabricks: t.projectCategories.azureDatabricks,
@@ -66,7 +73,7 @@ export default async function Page({ params }: Props) {
           <FeaturedArticleSection dict={t.sections} article={t.featuredArticle} />
         </section>
 
-        {/* EXPERIÊNCIA PROFISSIONAL - Responsividade melhorada */}
+        {/* EXPERIÊNCIA PROFISSIONAL */}
         <section className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-12" aria-labelledby="experience-title">
           <div>
             <h2 id="experience-title" className="text-3xl font-bold mb-6 border-b-2 border-blue-600 pb-2 w-fit">
@@ -99,11 +106,14 @@ export default async function Page({ params }: Props) {
           </h2>
 
           {!hasProjects ? (
-            <p className="text-slate-500 text-lg italic">{t.sections.projectsEmpty}</p>
+            <p className="text-slate-500 text-lg italic">
+              {t.sections.projectsEmpty || "Carregando projetos..."}
+            </p>
           ) : (
             <div className="space-y-16">
               {CATEGORIES_ORDER.map((key) => {
                 const projects = repos[key];
+                // Só renderiza a seção se houver projetos nela
                 if (!projects || projects.length === 0) return null;
 
                 return (

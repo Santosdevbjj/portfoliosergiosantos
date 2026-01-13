@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const baseUrl = "https://portfoliosergiosantos.vercel.app"; // ajuste para seu domínio real
+const baseUrl = "https://portfoliosergiosantos.vercel.app";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -8,10 +8,17 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/private/", "/admin/"], // ajuste conforme suas rotas internas
+        disallow: [
+          "/api/",      // Protege suas rotas de API
+          "/_next/",    // Protege arquivos internos do Next.js
+          "/private/", 
+          "/admin/"
+        ],
       },
     ],
-    // Em vez de listar cada sitemap, apontamos para o index central
-    sitemap: [`${baseUrl}/sitemap-index.xml`],
+    /** * Se você seguiu a recomendação de simplificar o sitemap, 
+     * use 'sitemap.xml'. Se manteve o index, use 'sitemap-index.xml'.
+     */
+    sitemap: [`${baseUrl}/sitemap.xml`],
   };
 }

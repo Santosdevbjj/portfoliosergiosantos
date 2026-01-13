@@ -1,75 +1,74 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useTheme } from "@/hooks/useTheme";
 import type { Translations } from "@/lib/i18n";
-
-type Theme = "light" | "dark";
+import { useEffect, useState } from "react";
 
 interface ThemeToggleProps {
   dictionary: Translations["theme"];
 }
 
 export default function ThemeToggle({ dictionary }: ThemeToggleProps) {
-  const [theme, setTheme] = useState<Theme>("light");
+  const { isDark, toggleTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  // Inicializa o tema no client
+  // Evita Hydration Mismatch: só renderiza o ícone após o mount no cliente
   useEffect(() => {
-    const storedTheme = localStorage.getItem("theme") as Theme | null;
-
-    if (storedTheme) {
-      setTheme(storedTheme);
-    } else {
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      setTheme(prefersDark ? "dark" : "light");
-    }
+    setMounted(true);
   }, []);
 
-  // Aplica o tema no DOM e persiste
-  useEffect(() => {
-    const isDark = theme === "dark";
-    document.documentElement.classList.toggle("dark", isDark);
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+  if (!mounted) {
+    return <div className="p-2 w-10 h-10 sm:w-32" />; // Placeholder com mesmo tamanho
+  }
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
-
-  const isDark = theme === "dark";
-  const label = isDark
-    ? dictionary.themeLight
-    : dictionary.themeDark;
+  const label = isDark ? dictionary.themeLight : dictionary.themeDark;
 
   return (
     <button
       type="button"
       onClick={toggleTheme}
       aria-label={label}
-      aria-pressed={isDark}
-      aria-live="polite"
       className="
-        flex items-center gap-2
+        group relative flex items-center gap-2
         p-2 sm:px-4 sm:py-2
-        rounded-md
-        bg-gray-100 dark:bg-gray-800
-        text-gray-800 dark:text-gray-200
-        hover:bg-gray-200 dark:hover:bg-gray-700
-        transition-colors duration-300
-        text-sm sm:text-base
-        focus:outline-none
-        focus:ring-2 focus:ring-offset-2
-        focus:ring-blue-500
+        rounded-lg border border-slate-200 dark:border-slate-800
+        bg-white dark:bg-slate-900
+        text-slate-700 dark:text-slate-200
+        hover:border-blue-500 dark:hover:border-blue-400
+        hover:bg-slate-50 dark:hover:bg-slate-800/50
+        transition-all duration-300 shadow-sm
+        focus:outline-none focus:ring-2 focus:ring-blue-500/50
       "
     >
-      <span className="whitespace-nowrap">
+      {/* Label visível apenas em telas maiores */}
+      <span className="hidden sm:inline text-xs font-semibold uppercase tracking-wider">
         {label}
       </span>
 
-      <span role="img" aria-hidden="true">
-        {isDark ? "☀️" : "🌙"}
-      </span>
+      {/* Ícone com transição de rotação */}
+      <div className="relative h-5 w-5">
+        {isDark ? (
+          <svg
+            className="h-5 w-5 text-yellow-500 transition-transform duration-500 rotate-0 scale-100"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        ) : (
+          <svg
+            className="h-5 w-5 text-slate-700 transition-transform duration-500 rotate-0 scale-100"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        )}
+      </div>
     </button>
   );
 }

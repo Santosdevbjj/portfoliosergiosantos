@@ -6,14 +6,8 @@ module.exports = {
   content: [
     './app/**/*.{js,ts,jsx,tsx}',
     './components/**/*.{js,ts,jsx,tsx}',
+    './hooks/**/*.{js,ts,jsx,tsx}', // Adicionado para garantir que hooks que usam classes funcionem
     './lib/**/*.{js,ts,jsx,tsx}',
-    './dictionaries/**/*.json',
-  ],
-  // Removida a regex agressiva do safelist para otimizar o bundle
-  safelist: [
-    'prose',
-    'prose-technical',
-    'dark:prose-darkTechnical',
   ],
   theme: {
     extend: {
@@ -22,23 +16,36 @@ module.exports = {
         ...defaultTheme.screens,
       },
       fontFamily: {
-        inter: ['var(--font-inter)', ...defaultTheme.fontFamily.sans],
-        noto: ['Noto Sans', 'sans-serif'],
+        // Prioriza a variável do next/font injetada no layout
+        sans: ['var(--font-inter)', ...defaultTheme.fontFamily.sans],
+        mono: ['JetBrains Mono', ...defaultTheme.fontFamily.mono], // Ideal para engenharia de dados
       },
       colors: {
-        primary: { light: '#7f5af0', DEFAULT: '#7f5af0', dark: '#5a3db1' },
-        accent: { light: '#f0a500', DEFAULT: '#f0a500', dark: '#b18300' },
-        secondary: { light: '#ff61dc', DEFAULT: '#ff61dc', dark: '#b03f99' },
-        brand: { light: '#6366f1', DEFAULT: '#4f46e5', dark: '#3730a3' },
+        // Cores semânticas alinhadas com o que construímos nos componentes
+        brand: {
+          50: '#f0f4ff',
+          100: '#e1e9ff',
+          500: '#3b82f6', // Primary Blue
+          600: '#2563eb',
+          700: '#1d4ed8',
+        },
+        // Superfícies para facilitar o uso em Cards e Modais
         surface: {
           light: '#ffffff',
-          dark: '#0f172a',
+          dark: '#020617', // Slate-950
+          card: {
+            light: '#f8fafc', // Slate-50
+            dark: '#0f172a',  // Slate-900
+          }
         },
       },
       keyframes: {
-        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+        fadeIn: { 
+          '0%': { opacity: '0' }, 
+          '100%': { opacity: '1' } 
+        },
         slideUp: {
-          '0%': { transform: 'translateY(20px)', opacity: '0' },
+          '0%': { transform: 'translateY(12px)', opacity: '0' },
           '100%': { transform: 'translateY(0)', opacity: '1' },
         },
         gradientMove: {
@@ -47,37 +54,27 @@ module.exports = {
         },
       },
       animation: {
-        fadeIn: 'fadeIn 0.4s ease-in-out',
-        slideUp: 'slideUp 0.4s ease-out',
-        'text-gradient': 'gradientMove 5s ease infinite',
+        fadeIn: 'fadeIn 0.5s ease-out',
+        slideUp: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+        'text-gradient': 'gradientMove 6s ease infinite',
       },
-      backgroundSize: {
-        '300%': '300% 300%',
-      },
-      // Configuração de Tipografia para MDX e textos longos
       typography: (theme) => ({
-        technical: {
+        // Tema customizado para seus artigos técnicos de dados
+        DEFAULT: {
           css: {
-            '--tw-prose-links': theme('colors.primary.DEFAULT'),
-            color: theme('colors.slate.700'),
-            maxWidth: 'none',
-            code: {
-              backgroundColor: theme('colors.slate.100'),
-              padding: '2px 4px',
-              borderRadius: '4px',
-              fontWeight: '400',
-            },
+            maxWidth: '75ch', // Melhor para legibilidade de texto longo
+            '--tw-prose-headings': theme('colors.slate.900'),
+            '--tw-prose-links': theme('colors.brand.600'),
+            '--tw-prose-bold': theme('colors.slate.900'),
+            '--tw-prose-code': theme('colors.brand.700'),
           },
         },
-        darkTechnical: {
+        invert: { // Tema dark nativo do plugin typography
           css: {
-            color: theme('colors.slate.300'),
-            '--tw-prose-links': theme('colors.blue.400'),
             '--tw-prose-headings': theme('colors.white'),
-            code: {
-              backgroundColor: theme('colors.slate.800'),
-              color: theme('colors.pink.400'),
-            },
+            '--tw-prose-links': theme('colors.brand.500'),
+            '--tw-prose-bold': theme('colors.white'),
+            '--tw-prose-code': theme('colors.brand.400'),
           },
         },
       }),
@@ -86,8 +83,7 @@ module.exports = {
   plugins: [
     require('@tailwindcss/typography'),
     require('@tailwindcss/forms'),
-    require('@tailwindcss/aspect-ratio'),
     require('@tailwindcss/container-queries'),
-    require('tailwindcss-animate'),
+    require('tailwindcss-animate'), // Suporte para as classes animate-in do menu mobile
   ],
 };

@@ -1,42 +1,35 @@
 {
   "compilerOptions": {
-    /* Alvo moderno de compilação */
     "target": "ES2022",
-
-    /* Bibliotecas padrão incluídas */
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-
-    /* Configurações de segurança e robustez */
+    "lib": ["dom", "dom.iterable", "esnext"],
+    
+    /* Strict mode é essencial para manter a qualidade que revisamos nos componentes */
     "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    
     "skipLibCheck": true,
     "noEmit": true,
-    "allowJs": false,
+    "allowJs": true,
     "forceConsistentCasingInFileNames": true,
-
-    /* Compatibilidade com módulos e Next.js */
+    
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "module": "ESNext",
-    "moduleResolution": "NodeNext",
+    "module": "esnext",
+    
+    /* Recomendado para Next.js 14+ para melhor compatibilidade com pacotes */
+    "moduleResolution": "bundler",
+    
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
-    "jsxImportSource": "react",
-    "moduleDetection": "force",
-
-    /* Performance */
+    "jsx": "preserve", // Deixa o Next.js controlar a transformação JSX
     "incremental": true,
 
-    /* Imports absolutos */
+    /* Imports absolutos (seu alias @/ já está correto) */
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
     },
 
-    /* Tipos globais */
-    "types": ["node", "react", "next", "jest"],
-
-    /* Plugin Next.js */
     "plugins": [
       {
         "name": "next"
@@ -45,9 +38,9 @@
   },
   "include": [
     "next-env.d.ts",
-    ".next/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", ".next", "dist"]
+  "exclude": ["node_modules"]
 }

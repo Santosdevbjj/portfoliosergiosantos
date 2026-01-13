@@ -10,8 +10,8 @@ export interface ProjectFrontmatter {
   date?: string;
   description?: string;
   tags?: string[];
-  slug?: string;
-  featured?: boolean; // Adicionado para destacar projetos no futuro
+  slug: string; // Slug é obrigatório para navegação
+  featured?: boolean;
 }
 
 export interface ProjectData {
@@ -21,26 +21,20 @@ export interface ProjectData {
   metadata: ProjectFrontmatter;
 }
 
-const MDX_ROOT = path.join(process.cwd(), "mdx");
+// Caminho absoluto para a pasta de conteúdos
+const MDX_ROOT = path.join(process.cwd(), "content/projects");
 
 /**
- * Retorna o caminho absoluto de um arquivo MDX
- */
-function getProjectPath(lang: Lang, slug: string) {
-  return path.join(MDX_ROOT, lang, `${slug}.mdx`);
-}
-
-/**
- * Normaliza e valida o frontmatter
+ * Normaliza e valida o frontmatter com valores padrão seguros
  */
 function normalizeFrontmatter(
-  data: Record<string, unknown>,
+  data: Record<string, any>,
   slug: string
 ): ProjectFrontmatter {
   return {
     title: String(data.title || slug),
-    date: typeof data.date === "string" ? data.date : undefined,
-    description: typeof data.description === "string" ? data.description : undefined,
+    date: data.date ? String(data.date) : undefined,
+    description: data.description ? String(data.description) : undefined,
     tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
     slug,
     featured: Boolean(data.featured),
@@ -48,23 +42,27 @@ function normalizeFrontmatter(
 }
 
 /**
- * Lê e processa um arquivo MDX específico com tratamento de erro granular
+ * Lê e processa um arquivo MDX específico.
+ * Usa process.cwd() para garantir compatibilidade com o ambiente de build da Vercel.
  */
 async function readMdxFile(
   lang: Lang,
   slug: string
 ): Promise<ProjectData | null> {
-  const filePath = getProjectPath(lang, slug);
+  const filePath = path.join(MDX_ROOT, lang, `${slug}.mdx`);
 
   try {
-    // Verifica se o arquivo existe antes de tentar ler (evita throws desnecessários)
-    const stats = await fs.stat(filePath);
-    if (!stats.isFile()) return null;
+    // Verifica existência do arquivo
+    try {
+      await fs.access(filePath);
+    } catch {
+      return null;
+    }
 
     const raw = await fs.readFile(filePath, "utf8");
     const { data, content } = matter(raw);
 
-    // Se o conteúdo estiver vazio e não houver frontmatter, ignora
+    // Ignora arquivos corrompidos ou vazios
     if (!content && Object.keys(data).length === 0) return null;
 
     return {
@@ -74,29 +72,30 @@ async function readMdxFile(
       metadata: normalizeFrontmatter(data, slug),
     };
   } catch (error) {
-    // Log apenas em desenvolvimento para não poluir o log de produção
     if (process.env.NODE_ENV === "development") {
-      console.warn(`[MDX] Arquivo não encontrado ou inválido: ${lang}/${slug}`);
+      console.error(`[MDX Error] ${lang}/${slug}:`, error);
     }
     return null;
   }
 }
 
 /**
- * Lê um projeto por slug e idioma.
- * ⚡ Cacheado no nível da requisição pelo React
+ * Obtém um projeto por slug e idioma com Fallback inteligente.
+ * ⚡ Cacheado no nível da requisição.
  */
 export const getProjectBySlug = cache(
   async (slug: string, lang: Lang): Promise<ProjectData | null> => {
     const project = await readMdxFile(lang, slug);
+    
     if (project) return project;
 
-    // Fallback inteligente: Se não achou em PT ou ES, tenta EN
-    if (lang !== "en") {
+    // Fallback: Se não existe no idioma atual, tenta no idioma padrão (PT)
+    // Se o pedido já for PT e falhou, tenta EN.
+    if (lang !== "pt") {
+      return await readMdxFile("pt", slug);
+    } else {
       return await readMdxFile("en", slug);
     }
-
-    return null;
   }
 );
 
@@ -109,10 +108,9 @@ export const listSlugsByLang = cache(
 
     try {
       const entries = await fs.readdir(dir, { withFileTypes: true });
-
       return entries
-        .filter((e) => e.isFile() && e.name.endsWith(".mdx"))
-        .map((e) => e.name.replace(/\.mdx$/, ""));
+        .filter((e) => e.isFile() && (e.name.endsWith(".mdx") || e.name.endsWith(".md")))
+        .map((e) => e.name.replace(/\.mdx$|\.md$/, ""));
     } catch {
       return [];
     }
@@ -120,7 +118,7 @@ export const listSlugsByLang = cache(
 );
 
 /**
- * Retorna todos os projetos de um idioma de forma eficiente.
+ * Retorna todos os projetos ordenados por data.
  */
 export async function getAllProjects(lang: Lang): Promise<ProjectData[]> {
   const slugs = await listSlugsByLang(lang);
@@ -132,9 +130,8 @@ export async function getAllProjects(lang: Lang): Promise<ProjectData[]> {
   return projects
     .filter((p): p is ProjectData => p !== null)
     .sort((a, b) => {
-      // Ordenação segura por data (decrescente)
       const dateA = a.metadata.date ? new Date(a.metadata.date).getTime() : 0;
       const dateB = b.metadata.date ? new Date(b.metadata.date).getTime() : 0;
-      return dateB - dateA;
+      return dateB - dateA; // Mais recentes primeiro
     });
 }

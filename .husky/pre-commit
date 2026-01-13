@@ -1,6 +1,11 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# Comandos que o Husky vai rodar antes de permitir o Commit
-npm run lint
+# 1. Formata o código primeiro
 npm run format
+
+# 2. Verifica erros de Lint
+npm run lint
+
+# 3. Verifica erros de Tipagem (TypeScript) - Opcional mas recomendado
+npm run type-check

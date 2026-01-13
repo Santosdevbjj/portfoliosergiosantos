@@ -1,8 +1,15 @@
-export type Translations = {
+/* ========= LOCALES ========= */
+export const SUPPORTED_LOCALES = ["pt", "en", "es"] as const;
+
+export type Locale = (typeof SUPPORTED_LOCALES)[number];
+
+/* ========= DICTIONARY ========= */
+export type Dictionary = {
   meta: {
     title: string;
     description: string;
   };
+
   navigation: {
     home: string;
     about: string;
@@ -12,13 +19,16 @@ export type Translations = {
     openMenu: string;
     closeMenu: string;
   };
+
   footer: {
     rights: string;
   };
+
   darkMode: {
     lightMode: string;
     darkMode: string;
   };
+
   sections: {
     aboutTitle: string;
     aboutIntro: string;
@@ -27,29 +37,33 @@ export type Translations = {
     reskillingTitle: string;
     differentialTitle: string;
     objectiveTitle: string;
-    stackConsolidated: string;
-    stackUpdating: string;
+
     projectsTitle: string;
     articlesTitle: string;
     featuredArticle: string;
     contactTitle: string;
+
     searchPlaceholder: string;
     searchLabel: string;
     filtersTitle: string;
     projectsGridTitle: string;
     noProjectsFound: string;
   };
+
   portfolio: {
     title: string;
     description: string;
     buttonLabel: string;
     projects: string;
   };
+
   cv: {
     url: string;
     label: string;
   };
+
   socialImage: string;
+
   featuredArticle: {
     title: string;
     description: string;
@@ -62,6 +76,7 @@ export type Translations = {
       medium: string;
     };
   };
+
   featuredProject: {
     title: string;
     problem: string;
@@ -69,16 +84,16 @@ export type Translations = {
     solution: string;
     result: string;
   };
+
   experience: {
     item1: string;
     item2: string;
     item3: string;
-    stackConsolidated: string;
-    stackUpdating: string;
     reskilling: string;
     differential: string;
     objective: string;
   };
+
   projectCategories: {
     dataScience: string;
     azureDatabricks: string;

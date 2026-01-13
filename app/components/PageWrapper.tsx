@@ -1,36 +1,26 @@
 "use client";
 
-import type { ReactNode } from "react";
-import type { Locale } from "@/lib/i18n";
+import { ReactNode } from "react";
+import { motion } from "framer-motion"; // Sugestão para um portfólio de alto nível
 
 interface Props {
   children: ReactNode;
-  lang?: Locale;
 }
 
-export default function PageWrapper({
-  children,
-  lang = "pt",
-}: Props) {
+export default function PageWrapper({ children }: Props) {
   return (
-    <main
-      role="main"
-      lang={lang === "en" ? "en-US" : lang === "es" ? "es-ES" : "pt-BR"}
-      aria-label={
-        lang === "en"
-          ? "Main content"
-          : lang === "es"
-          ? "Contenido principal"
-          : "Conteúdo principal"
-      }
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
       className="
-        min-h-screen w-full flex flex-col flex-1
+        w-full max-w-7xl mx-auto
+        flex flex-col flex-1
         px-4 sm:px-6 lg:px-8
-        bg-gray-50 dark:bg-gray-900
-        transition-colors duration-500
+        py-8 sm:py-12
       "
     >
       {children}
-    </main>
+    </motion.div>
   );
 }

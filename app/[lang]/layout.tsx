@@ -8,7 +8,6 @@ import Navbar from "@/components/Navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
-/** 🎨 Configuração do Viewport para Performance e Mobile */
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -18,13 +17,11 @@ export const viewport: Viewport = {
   ],
 };
 
-/** 🏷️ Definição das Props para compatibilidade com Next.js 15 */
 interface Props {
   children: React.ReactNode;
   params: Promise<{ lang: Locale }>;
 }
 
-/** 🔎 Metadados Globais (SEO) */
 export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
   const { lang } = await params;
   
@@ -59,6 +56,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
         "pt-BR": `${baseUrl}/pt`,
         "en-US": `${baseUrl}/en`,
         "es-ES": `${baseUrl}/es`,
+        "x-default": `${baseUrl}/en`, // Recomendado para SEO internacional
       },
     },
     openGraph: {
@@ -80,35 +78,29 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
   };
 }
 
-/** 🚀 Gera as rotas estáticas para os idiomas no momento do build */
 export async function generateStaticParams() {
   return i18n.locales.map((locale) => ({ lang: locale }));
 }
 
-/** 🏛️ Layout Raiz (RootLayout) */
 export default async function RootLayout({ children, params }: Props) {
   const { lang } = await params;
-  
-  // Como o getDictionary geralmente é assíncrono para carregar JSON, mantemos o await.
   const dict = await getDictionary(lang); 
 
   return (
     <html lang={lang} className="scroll-smooth" suppressHydrationWarning>
       <body
-        className={`${inter.className} bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 antialiased min-h-screen flex flex-col`}
+        className={`${inter.className} bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 antialiased min-h-screen flex flex-col overflow-x-hidden`}
       >
         <ThemeProvider>
-          {/* O Navbar agora recebe o dicionário para evitar re-fetch no cliente */}
           <Navbar lang={lang} dict={dict} />
           
           <main className="flex-grow">
             {children}
           </main>
           
-          {/* Sugestão: O Footer pode vir aqui quando estiver pronto */}
+          {/* Footer será injetado aqui via page ou futuramente aqui */}
         </ThemeProvider>
 
-        {/* Analytics só carrega se a ID estiver definida nas variáveis de ambiente */}
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
         )}

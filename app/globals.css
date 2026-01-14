@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    /* Altura da Navbar para âncoras de scroll (ajustado para precisão) */
+    /* Altura da Navbar para âncoras de scroll */
     scroll-padding-top: 6rem;
     
     /* Cores de Marca em HSL para manipulação de opacidade via Tailwind */
@@ -14,20 +14,19 @@
 
   html {
     scroll-behavior: smooth;
+    /* color-scheme ajuda o navegador a renderizar barras de rolagem nativas corretamente */
     color-scheme: light dark;
-    /* Previne saltos horizontais indesejados */
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   body {
-    /* Define o fundo imediatamente para evitar o "white flash" no Dark Mode */
-    @apply bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-50;
+    /* Corrigido: min-h-screen agora dentro do @apply */
+    @apply bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-50 min-h-screen;
     @apply transition-colors duration-500;
     text-rendering: optimizeLegibility;
     line-height: 1.6;
-    min-h-screen;
   }
 
   /* Foco Acessível: Essencial para conformidade WCAG */
@@ -35,7 +34,7 @@
     @apply outline-none ring-2 ring-blue-600 ring-offset-2 dark:ring-offset-slate-950;
   }
 
-  /* Tipografia Fluida - Foco em Senioridade e Legibilidade */
+  /* Tipografia Fluida */
   h1, h2, h3, h4 {
     @apply tracking-tighter text-slate-900 dark:text-white font-black;
     line-height: 1.1;
@@ -58,28 +57,25 @@
   p {
     @apply leading-relaxed text-slate-600 dark:text-slate-400 font-medium;
     font-size: clamp(1rem, 1.1vw, 1.125rem);
-    max-width: 75ch; /* Limita a largura para melhor leitura */
+    max-width: 75ch;
   }
 
-  /* Customização da Seleção - Branding */
   ::selection {
     @apply bg-blue-600/20 text-blue-900 dark:text-blue-100;
   }
 }
 
 @layer components {
-  /* Container Principal com consistência de margens */
   .main-container {
     @apply max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 w-full;
   }
 
-  /* Efeito de Vidro (Glassmorphism) para Nav e Cards */
   .glass-effect {
     @apply bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50;
     @apply shadow-[0_8px_32px_0_rgba(0,0,0,0.05)];
   }
 
-  /* Scrollbar Estilizada - Invisível até o hover para minimalismo */
+  /* Scrollbar Estilizada */
   ::-webkit-scrollbar {
     @apply w-1.5;
   }
@@ -89,7 +85,7 @@
   }
   
   ::-webkit-scrollbar-thumb {
-    @apply bg-slate-200 dark:bg-slate-800 rounded-full transition-colors border-2 border-transparent bg-clip-content;
+    @apply bg-slate-200 dark:bg-slate-800 rounded-full border-2 border-transparent bg-clip-content;
   }
   
   *:hover::-webkit-scrollbar-thumb {
@@ -98,31 +94,31 @@
 }
 
 @layer utilities {
-  /* Gradiente Animado - Velocidade ajustada para não distrair */
   .animate-text-gradient {
     @apply bg-clip-text text-transparent;
     background-size: 200% auto;
-    animation: textGradient 8s linear infinite;
+    /* Sincronizado com o nome no tailwind.config.js */
+    animation: gradientMove 8s linear infinite;
     background-image: linear-gradient(
       to right,
-      #2563eb,
-      #4f46e5,
+      #3b82f6,
+      #6366f1,
       #0ea5e9,
-      #2563eb
+      #3b82f6
     );
   }
 
-  /* Grade de Fundo "Blueprint" - Identidade de Engenharia */
   .bg-grid-data {
     background-image: 
       linear-gradient(to right, currentColor 1px, transparent 1px),
       linear-gradient(to bottom, currentColor 1px, transparent 1px);
     background-size: 40px 40px;
+    /* Mascara para suavizar o grid nas bordas */
     mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, black 70%, transparent 100%);
-    @apply text-slate-100/50 dark:text-slate-900/40;
+    -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, black 70%, transparent 100%);
+    @apply text-slate-200/40 dark:text-slate-800/40;
   }
 
-  /* Utilitário para ocultar scrollbar mas manter funcionalidade */
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -132,7 +128,8 @@
   }
 }
 
-@keyframes textGradient {
+/* Keyframes movidos para o final para garantir prioridade de renderização */
+@keyframes gradientMove {
   from { background-position: 0% center; }
   to { background-position: 200% center; }
 }

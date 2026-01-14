@@ -1,28 +1,34 @@
 // app/layout.tsx
 import { ReactNode } from "react";
-import "./globals.css"; // Importação global de estilos (Tailwind)
+import { Inter } from "next/font/google";
+import "./globals.css";
 
-/**
- * Root Layout Global
- * No Next.js 15, este arquivo deve renderizar as tags base <html> e <body>.
- * A lógica de [lang] continuará funcionando normalmente no layout interno.
- */
-export default function RootLayout({ children }: { children: ReactNode }) {
+// Configuração de fonte otimizada para performance
+const inter = Inter({ 
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+export default function RootLayout({ 
+  children,
+}: { 
+  children: ReactNode;
+}) {
   return (
-    // suppressHydrationWarning é necessário para o script de tema não causar erro no React
-    <html suppressHydrationWarning>
+    <html suppressHydrationWarning className={inter.variable}>
       <head>
-        {/* Injeção crítica para performance do Modo Escuro */}
+        {/* Script crítico: Bloqueia a renderização até decidir o tema correto */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
                 try {
-                  const savedTheme = localStorage.getItem('theme') || 
-                                     document.cookie.split('; ').find(row => row.startsWith('theme='))?.split('=')[1];
+                  const savedTheme = localStorage.getItem('theme');
                   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  const useDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
-                  if (useDark) {
+                  const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+                  
+                  if (theme === 'dark') {
                     document.documentElement.classList.add('dark');
                     document.documentElement.style.colorScheme = 'dark';
                   } else {
@@ -35,7 +41,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           }}
         />
       </head>
-      <body className="antialiased bg-white dark:bg-slate-950 transition-colors duration-300">
+      <body className="antialiased font-sans bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
         {children}
       </body>
     </html>

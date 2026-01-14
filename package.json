@@ -12,8 +12,7 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "format": "prettier --write .",
-    "prepare": "husky",
-    "clean": "rm -rf .next"
+    "prepare": "husky"
   },
   "dependencies": {
     "next": "15.0.7",
@@ -54,6 +53,6 @@
     "husky": "^9.1.6"
   },
   "engines": {
-    "node": "22.x"
+    "node": "24.x"
   }
 }

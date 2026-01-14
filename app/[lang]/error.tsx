@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useParams } from "next/navigation";
 
 export default function Error({
   error,
@@ -9,66 +10,99 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    // Log do erro para o console do desenvolvedor (visível no log da Vercel se for SSR)
-    console.error("Critical Rendering Error:", error);
+  const params = useParams();
+  const lang = (params?.lang as string) || "en";
 
+  // Textos de fallback caso o erro ocorra antes do dicionário carregar
+  const content = {
+    pt: {
+      title: "Ops! Algo deu errado",
+      desc: "Ocorreu um erro inesperado. Nossa equipe técnica foi notificada automaticamente.",
+      retry: "Tentar novamente",
+      home: "Voltar para Home",
+    },
+    en: {
+      title: "Something went wrong!",
+      desc: "An unexpected error occurred. Our technical team has been automatically notified.",
+      retry: "Try again",
+      home: "Back to Home",
+    },
+    es: {
+      title: "¡Algo saiu mal!",
+      desc: "Ocurrió un error inesperado. Nuestro equipo técnico ha sido notificado automáticamente.",
+      retry: "Reintentar",
+      home: "Volver al Inicio",
+    },
+  }[lang] || {
+    title: "Something went wrong!",
+    desc: "An unexpected error occurred.",
+    retry: "Try again",
+    home: "Back to Home",
+  };
+
+  useEffect(() => {
+    // 1. Console log para debug local e Vercel Runtime logs
+    console.error("Next.js Error Boundary:", error);
+
+    // 2. Envio para seu Proxy de Log (BetterStack)
     const reportError = async () => {
       try {
         await fetch("/api/log", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            level: "error",
-            message: error.message || "Erro de renderização no cliente",
-            stack: error.stack,
+            level: "critical",
+            message: error.message || "Next.js Rendering Error",
             digest: error.digest,
-            url: typeof window !== "undefined" ? window.location.href : "unknown",
-            timestamp: new Date().toISOString(),
+            stack: error.stack?.substring(0, 1000), // Limita tamanho do log
+            url: window.location.href,
+            lang: lang,
           }),
         });
       } catch (e) {
-        // Falha silenciosa para não gerar um loop de erros
+        // Falha silenciosa para evitar loops
       }
     };
 
     reportError();
-  }, [error]);
+  }, [error, lang]);
 
   return (
-    <div className="flex min-h-[70vh] flex-col items-center justify-center px-6 text-center">
-      <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
-        <span className="text-4xl">⚠️</span>
+    <div className="flex min-h-[80vh] flex-col items-center justify-center px-6 text-center animate-in fade-in duration-500">
+      <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-[2rem] bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20">
+        <span className="text-5xl animate-pulse">⚠️</span>
       </div>
       
-      <h2 className="mb-4 text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-        Ops! Algo deu errado.
+      <h2 className="mb-4 text-4xl md:text-5xl font-black tracking-tighter text-slate-900 dark:text-white leading-none">
+        {content.title}
       </h2>
       
-      <p className="mb-8 max-w-md text-lg text-slate-600 dark:text-slate-400">
-        Ocorreu um erro inesperado na renderização desta página. Nossa equipe técnica foi notificada automaticamente.
+      <p className="mb-10 max-w-md text-lg font-medium text-slate-500 dark:text-slate-400">
+        {content.desc}
       </p>
 
       <div className="flex flex-col gap-4 sm:flex-row">
         <button
           onClick={() => reset()}
-          className="rounded-2xl bg-blue-600 px-8 py-3 font-bold text-white transition-all hover:bg-blue-700 hover:shadow-lg active:scale-95 shadow-blue-500/20"
+          className="rounded-2xl bg-blue-600 px-10 py-4 font-black text-xs uppercase tracking-widest text-white transition-all hover:bg-blue-700 hover:scale-105 active:scale-95 shadow-xl shadow-blue-500/20"
         >
-          Tentar novamente
+          {content.retry}
         </button>
         
         <button
-          onClick={() => window.location.href = "/"}
-          className="rounded-2xl bg-slate-200 px-8 py-3 font-bold text-slate-900 transition-all hover:bg-slate-300 active:scale-95 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
+          onClick={() => window.location.href = `/${lang}`}
+          className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-transparent px-10 py-4 font-black text-xs uppercase tracking-widest text-slate-600 dark:text-slate-400 transition-all hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-white"
         >
-          Voltar para Home
+          {content.home}
         </button>
       </div>
 
       {error.digest && (
-        <p className="mt-10 text-xs font-mono text-slate-400 dark:text-slate-500">
-          ID do erro: {error.digest}
-        </p>
+        <div className="mt-12 p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800/50">
+          <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
+            Error ID: {error.digest}
+          </p>
+        </div>
       )}
     </div>
   );

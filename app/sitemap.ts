@@ -1,30 +1,39 @@
 import { MetadataRoute } from "next";
-import { i18n } from "@/lib/i18n";
 
 /**
- * Sitemap dinâmico para Next.js 15.
- * Gera URLs para cada idioma e cada página principal.
+ * 🗺️ Gerador de Sitemap Dinâmico (i18n)
+ * Essencial para que motores de busca indexem corretamente as versões PT, EN e ES.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://portfoliosergiosantos.vercel.app";
+  const locales = ["pt", "en", "es"];
   const now = new Date();
 
-  // Rotas estáticas do seu portfólio
-  const routes = ["", "/about", "/projects/list", "/contact"];
+  // Rotas fundamentais do seu ecossistema
+  const routes = ["", "/about", "/projects", "/contact"];
 
-  const sitemapEntries: MetadataRoute.Sitemap = [];
+  return routes.flatMap((route) => {
+    return locales.map((lang) => {
+      const isDefault = lang === "pt";
+      const path = route === "" ? "" : route;
+      const url = `${baseUrl}/${lang}${path}`;
 
-  // Gera entradas para cada idioma e cada rota
-  i18n.locales.forEach((lang) => {
-    routes.forEach((route) => {
-      sitemapEntries.push({
-        url: `${baseUrl}/${lang}${route}`,
+      return {
+        url,
         lastModified: now,
-        changeFrequency: route === "/projects/list" ? "weekly" : "monthly",
+        changeFrequency: (route === "/projects" ? "weekly" : "monthly") as any,
         priority: route === "" ? 1.0 : 0.8,
-      });
+        // 🌐 Alternates: Informa ao Google a relação entre os idiomas
+        // Isso evita punições por "conteúdo duplicado" entre as versões traduzidas
+        alternates: {
+          languages: {
+            pt: `${baseUrl}/pt${path}`,
+            en: `${baseUrl}/en${path}`,
+            es: `${baseUrl}/es${path}`,
+            "x-default": `${baseUrl}/pt${path}`, // Define PT como padrão global
+          },
+        },
+      };
     });
   });
-
-  return sitemapEntries;
 }

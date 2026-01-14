@@ -4,27 +4,39 @@ root = true
 [*]
 charset = utf-8
 end_of_line = lf
-insert_final_newline = true
 indent_style = space
 indent_size = 2
+insert_final_newline = true
 trim_trailing_whitespace = true
 
-# Manter espaços em branco em arquivos Markdown (importante para quebras de linha do MD)
+# Tipografia e Documentação técnica
 [*.{md,mdx}]
+# No Markdown, dois espaços no final da linha significam quebra de linha <br>
 trim_trailing_whitespace = false
 indent_size = 2
 
-# Configurações específicas para linguagens de programação e web
-[*.{js,jsx,ts,tsx,json,yml,yaml,css,scss,html}]
+# Engenharia de Dados e Backend (Python e SQL)
+# Python segue a PEP8 (4 espaços) por convenção mundial
+[*.{py,sql}]
+indent_style = space
+indent_size = 4
+
+# Web Development (Frontend e Configurações)
+[*.{js,jsx,ts,tsx,json,css,scss,html,yml,yaml}]
 indent_style = space
 indent_size = 2
 
-# Scripts de terminal e automação
+# Scripts de terminal e Automação
 [*.{sh,bash}]
 indent_style = space
 indent_size = 2
-insert_final_newline = true
 
-# Makefile e arquivos que exigem TABS (caso você use para automação de dados)
+# Configuração de Makefile e arquivos que exigem TABS
 [Makefile]
 indent_style = tab
+indent_size = 4
+
+# Ignorar arquivos binários e gerados
+[*.{png,jpg,jpeg,gif,webp,ico,pdf,woff,woff2}]
+insert_final_newline = false
+trim_trailing_whitespace = false

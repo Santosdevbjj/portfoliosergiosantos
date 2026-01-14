@@ -3,99 +3,108 @@
 @tailwind utilities;
 
 @layer base {
-  *, *::before, *::after { box-sizing: border-box; }
+  *, *::before, *::after { 
+    @apply border-slate-200 dark:border-slate-800;
+    box-sizing: border-box; 
+  }
 
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
-    /* Garante que o fundo não "pisque" no carregamento */
-    @apply bg-white dark:bg-slate-950;
+    /* Previne saltos de layout e define o fundo base */
+    @apply bg-white dark:bg-slate-950 antialiased;
   }
 
   body {
-    /* Removi a troca de fontes por lang aqui para não conflitar com o Next.js Fonts */
-    @apply text-slate-900 dark:text-slate-100 antialiased transition-colors duration-300;
+    @apply text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-300;
     line-height: 1.6;
+    /* Font-feature-settings para tipografia mais precisa */
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Foco acessível para navegação por teclado */
+  :focus-visible {
+    @apply outline-none ring-2 ring-blue-600 ring-offset-2 dark:ring-offset-slate-950;
   }
 
   ::selection { 
-    @apply bg-blue-500/30 text-blue-900 dark:text-white; 
+    @apply bg-blue-600/20 text-blue-900 dark:text-blue-100; 
   }
 
-  /* Tipografia fluida e moderna */
+  /* Tipografia Técnica Fluid */
   h1, h2, h3, h4, h5, h6 { 
-    @apply font-bold tracking-tighter text-slate-900 dark:text-white; 
+    @apply font-black tracking-tighter text-slate-900 dark:text-white leading-[1.1]; 
   }
   
-  h1 { font-size: clamp(2.5rem, 8vw, 4.5rem); }
-  h2 { font-size: clamp(1.8rem, 5vw, 3rem); }
-  h3 { font-size: clamp(1.5rem, 3vw, 2rem); }
+  h1 { font-size: clamp(2.5rem, 10vw, 6rem); }
+  h2 { font-size: clamp(2rem, 6vw, 3.5rem); }
+  h3 { font-size: clamp(1.5rem, 4vw, 2.25rem); }
 
-  p { @apply leading-relaxed text-slate-600 dark:text-slate-400; }
+  p { @apply leading-relaxed text-slate-600 dark:text-slate-400 font-medium; }
 
-  /* Links consistentes com o tema Azul */
-  a { 
-    @apply text-blue-600 dark:text-blue-400 transition-colors duration-200 no-underline; 
-  }
-  
-  a:hover { @apply text-blue-700 dark:text-blue-300; }
-
-  /* Scrollbar customizada para Dark Mode */
+  /* Scrollbar Moderna (Invisible-until-scroll style) */
   ::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
   }
   ::-webkit-scrollbar-track {
     @apply bg-transparent;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-slate-300 dark:bg-slate-800 rounded-full border-4 border-transparent bg-clip-content;
+    @apply bg-slate-200 dark:bg-slate-800 rounded-full border-2 border-transparent bg-clip-content;
   }
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-slate-400 dark:bg-slate-700;
+    @apply bg-slate-400 dark:bg-slate-600;
   }
 }
 
 @layer components {
-  /* Utilitários de Container para evitar repetição */
+  /* Utilitários de Layout Reutilizáveis */
   .section-container {
-    @apply mx-auto max-w-7xl px-6 lg:px-8 py-16 sm:py-24;
+    @apply mx-auto max-w-7xl px-6 lg:px-8 py-20 md:py-32;
   }
 
-  /* Estilos de Botão Padronizados */
+  /* Design de Botões "High-End" */
   .btn-base {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-all active:scale-95 disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl px-8 py-4 text-xs font-black uppercase tracking-widest transition-all duration-300 active:scale-95 disabled:opacity-50;
   }
   
   .btn-primary {
-    @apply btn-base bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/20;
+    @apply btn-base bg-blue-600 text-white hover:bg-blue-700 shadow-xl shadow-blue-600/20 hover:shadow-blue-600/40;
   }
 
-  .btn-ghost {
-    @apply btn-base text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800;
+  .btn-secondary {
+    @apply btn-base bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white hover:border-blue-600 dark:hover:border-blue-500;
   }
 
-  /* Cards com efeito de Glassmorphism */
   .glass-card {
-    @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-slate-800 shadow-sm;
+    @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-slate-800/50 shadow-2xl shadow-black/5;
   }
 }
 
 @layer utilities {
+  /* Gradiente Animado para Títulos */
   .text-gradient {
-    @apply bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent;
+    @apply bg-gradient-to-br from-blue-600 via-indigo-500 to-blue-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient-flow;
   }
 
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+  /* Máscara para imagens de arquitetura/gráficos */
+  .mask-radial {
+    mask-image: radial-gradient(circle, black, transparent 80%);
   }
 
-  /* Animação suave para entrada de conteúdo */
-  .fade-up {
-    animation: fadeUp 0.5s ease-out forwards;
+  /* Animações de Entrada (Stagger ready) */
+  .animate-reveal {
+    animation: reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(30px); filter: blur(10px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+
+  @keyframes gradient-flow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
   }
 }

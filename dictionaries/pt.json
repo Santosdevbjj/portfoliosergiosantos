@@ -1,41 +1,54 @@
 {
   "portfolio": {
-    "title": "Portfólio de Analytics Engineering",
-    "description": "Transformando dados complexos em insights estratégicos de negócio.",
-    "buttonLabel": "Ver projeto →"
+    "title": "Portfólio de Data & Analytics Engineering",
+    "description": "Engenheiro de Dados especializado em arquiteturas escaláveis, pipelines de ETL/ELT e transformação de dados em ativos estratégicos.",
+    "viewRepository": "Ver Repositório",
+    "githubProjects": "Outros Projetos no GitHub",
+    "noDescription": "Projeto de engenharia e análise de dados focado em eficiência e escalabilidade."
   },
   "categories": {
     "data-science": "Ciência de Dados",
     "azure-databricks": "Azure Databricks",
-    "neo4j": "Banco de Dados de Grafos (Neo4j)",
-    "power-bi": "Inteligência de Negócios (Power BI)",
+    "neo4j": "Banco de Dados de Grafos",
+    "power-bi": "Business Intelligence",
     "database": "Engenharia de Dados",
-    "python": "Desenvolvimento em Python",
-    "dotnet": "Desenvolvimento em .NET",
-    "java": "Desenvolvimento em Java",
-    "machine-learning": "Aprendizado de Máquina",
-    "aws": "Serviços em Nuvem (AWS)",
+    "python": "Ecossistema Python",
+    "dotnet": "Desenvolvimento .NET",
+    "java": "Desenvolvimento Java",
+    "machine-learning": "Machine Learning",
+    "aws": "Cloud Solutions (AWS)",
     "cybersecurity": "Cibersegurança",
     "programming-logic": "Lógica de Programação",
-    "html": "Fundamentos Web (HTML e CSS)",
+    "html": "Tecnologias Web",
     "articles-repo": "Artigos Técnicos"
   },
   "footer": {
     "rights": "Todos os direitos reservados.",
-    "contact": "Contato"
+    "contact": "Entre em contato",
+    "builtWith": "Desenvolvido com Next.js e Tailwind CSS"
   },
   "theme": {
     "themeLight": "Modo Claro",
-    "themeDark": "Modo Escuro"
+    "themeDark": "Modo Escuro",
+    "themeSystem": "Sistema"
   },
   "cta": {
-    "hireMe": "Contrate-me",
-    "downloadCV": "Baixar CV"
+    "hireMe": "Trabalhe Comigo",
+    "downloadCV": "Download CV",
+    "browseProjects": "Explorar Projetos"
   },
   "sections": {
-    "skills": "Habilidades",
-    "experience": "Experiência",
+    "skills": "Hard Skills",
+    "experience": "Trajetória Profissional",
     "featuredProjects": "Projetos em Destaque",
-    "testimonials": "Depoimentos"
+    "testimonials": "Recomendações",
+    "about": "Sobre Mim",
+    "contact": "Contato"
+  },
+  "common": {
+    "loading": "Carregando...",
+    "error": "Ocorreu um erro ao carregar os dados.",
+    "back": "Voltar",
+    "readMore": "Ler Artigo Completo"
   }
 }

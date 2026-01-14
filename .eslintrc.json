@@ -1,10 +1,22 @@
 {
   "root": true,
-  "env": {
-    "browser": true,
-    "es2021": true,
-    "node": true
-  },
+  "extends": [
+    "next/core-web-vitals",
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:jsx-a11y/recommended",
+    "prettier"
+  ],
+  "plugins": [
+    "react",
+    "react-hooks",
+    "@typescript-eslint",
+    "jsx-a11y",
+    "unused-imports",
+    "import"
+  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
@@ -18,30 +30,15 @@
       "version": "detect"
     }
   },
-  "plugins": [
-    "react",
-    "react-hooks",
-    "@typescript-eslint",
-    "jsx-a11y",
-    "unused-imports"
-  ],
-  "extends": [
-    "next/core-web-vitals", // O Next.js recomenda que este venha primeiro
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:jsx-a11y/recommended",
-    "prettier" // Prettier deve ser sempre o ÚLTIMO para sobrescrever regras de conflito
-  ],
   "rules": {
-    // React 17+ não precisa de React no escopo
+    /* ⚛️ React & Next.js */
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
+    "react/display-name": "off",
 
-    // Gerenciamento de imports e variáveis não utilizadas
+    /* 🧹 Gerenciamento de Código Limpo */
     "@typescript-eslint/no-unused-vars": "off",
-    "unused-imports/no-unused-imports": "error", // Elevado para error para manter o código limpo
+    "unused-imports/no-unused-imports": "error",
     "unused-imports/no-unused-vars": [
       "warn",
       {
@@ -52,22 +49,48 @@
       }
     ],
 
-    // Segurança e Tipagem
-    "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/consistent-type-imports": "warn", // Organiza imports de tipos
-
-    // Acessibilidade (Crítico para SEO e Ranking)
-    "jsx-a11y/alt-text": "error", // Imagem sem alt agora trava o build (importante!)
-    "jsx-a11y/anchor-is-valid": [
-      "error",
+    /* 📦 Organização de Imports (Engenharia de Software) */
+    "import/order": [
+      "warn",
       {
-        "components": ["Link"],
-        "specialLink": ["hrefLeft", "hrefRight"],
-        "aspects": ["invalidHref", "preferButton"]
+        "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
+        "pathGroups": [
+          {
+            "pattern": "react",
+            "group": "external",
+            "position": "before"
+          },
+          {
+            "pattern": "@/**",
+            "group": "internal"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": ["react"],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
       }
     ],
 
-    // Logs e Depuração
+    /* 🛡️ Tipagem e Segurança */
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/consistent-type-imports": [
+      "warn",
+      { "prefer": "type-imports", "fixStyle": "inline-type-imports" }
+    ],
+    "@typescript-eslint/no-empty-interface": "warn",
+
+    /* ♿ Acessibilidade (Crítico para SEO) */
+    "jsx-a11y/alt-text": "error",
+    "jsx-a11y/aria-props": "warn",
+    "jsx-a11y/aria-proptypes": "warn",
+    "jsx-a11y/aria-unsupported-elements": "warn",
+    "jsx-a11y/role-has-required-aria-props": "warn",
+    "jsx-a11y/role-supports-aria-props": "warn",
+
+    /* 📝 Logs e Depuração */
     "no-console": ["warn", { "allow": ["warn", "error"] }]
   },
   "overrides": [

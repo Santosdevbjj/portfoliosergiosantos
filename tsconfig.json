@@ -1,17 +1,17 @@
 {
   "compilerOptions": {
-    /* 🚀 Modern JavaScript Target para Node 24/Vercel */
+    /* 🚀 Alinhado com Node 24 e APIs Modernas */
     "target": "ESNext",
     "lib": ["dom", "dom.iterable", "esnext"],
     
-    /* 🛡️ Rigor de Engenharia (Strict Mode Total) */
+    /* 🛡️ Rigor de Engenharia (Mantido seu excelente padrão) */
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "strictBindCallApply": true,
     "strictPropertyInitialization": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": true, 
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
@@ -25,14 +25,14 @@
     "esModuleInterop": true,
     "module": "esnext",
     
-    /* ⚡ Next.js 15 Performance */
+    /* ⚡ Next.js 15 & React 19 Performance */
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
 
-    /* 🗺️ Caminhos Absolutos */
+    /* 🗺️ Caminhos Absolutos (Essencial para manter imports limpos) */
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
@@ -50,6 +50,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "mdx-components.tsx",
+    "next.config.js",
+    "next.config.mjs",
     "next.config.ts"
   ],
   "exclude": ["node_modules"]

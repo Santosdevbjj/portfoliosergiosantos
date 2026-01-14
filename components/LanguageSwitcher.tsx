@@ -13,37 +13,38 @@ export default function LanguageSwitcher({ lang }: LanguageSwitcherProps) {
   const pathname = usePathname();
 
   const languages = [
-    { code: "pt", label: "PT", flag: "BR" },
-    { code: "en", label: "EN", flag: "US" },
-    { code: "es", label: "ES", flag: "ES" },
-  ];
+    { code: "pt", label: "PT" },
+    { code: "en", label: "EN" },
+    { code: "es", label: "ES" },
+  ] as const;
 
+  // Lógica de transformação de URL robusta
   const getTransformedPathname = (newLocale: string) => {
     if (!pathname) return `/${newLocale}`;
     
-    const segments = pathname.split("/");
-    // Verifica se o primeiro segmento é um locale válido
-    const hasLocale = ["pt", "en", "es"].includes(segments[1]);
+    const segments = pathname.split("/").filter(Boolean);
+    const locales: string[] = ["pt", "en", "es"];
     
-    if (hasLocale) {
-      segments[1] = newLocale;
+    // Se o primeiro segmento for um locale, substitui. Se não, adiciona na frente.
+    if (locales.includes(segments[0])) {
+      segments[0] = newLocale;
     } else {
-      segments.splice(1, 0, newLocale);
+      segments.unshift(newLocale);
     }
     
-    return segments.join("/").replace(/\/+/g, '/') || `/${newLocale}`;
+    return `/${segments.join("/")}`;
   };
 
   return (
     <nav 
       aria-label="Language selector" 
-      className="inline-flex items-center gap-2 p-1 bg-slate-100/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm"
+      className="relative flex items-center gap-1 p-1 bg-slate-100/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-inner"
     >
-      <div className="pl-2 text-slate-400 dark:text-slate-500">
-        <Globe size={14} strokeWidth={2.5} />
+      <div className="flex items-center px-2 text-slate-400 dark:text-slate-500 border-r border-slate-200 dark:border-slate-800 mr-1">
+        <Globe size={14} strokeWidth={2.5} className="animate-in fade-in duration-500" />
       </div>
 
-      <ul className="flex items-center gap-1">
+      <ul className="flex items-center gap-1 relative z-10">
         {languages.map(({ code, label }) => {
           const isActive = lang === code;
 
@@ -54,17 +55,19 @@ export default function LanguageSwitcher({ lang }: LanguageSwitcherProps) {
                 scroll={false}
                 aria-current={isActive ? "page" : undefined}
                 className={`
-                  relative px-3 py-1.5 rounded-xl text-[10px] font-black tracking-widest transition-all duration-300
+                  relative flex items-center justify-center min-w-[36px] h-8 rounded-xl text-[10px] font-black tracking-tighter transition-all duration-500 ease-out
                   ${isActive 
-                    ? "bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm ring-1 ring-slate-200/50 dark:ring-slate-700/50" 
+                    ? "text-blue-600 dark:text-blue-400" 
                     : "text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
                   }
                 `}
               >
-                {label}
+                {/* Background da pílula ativa */}
                 {isActive && (
-                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-600 dark:bg-blue-400 rounded-full" />
+                  <div className="absolute inset-0 bg-white dark:bg-slate-800 rounded-xl shadow-sm ring-1 ring-slate-200/50 dark:ring-slate-700/50 animate-in zoom-in-95 duration-300 -z-10" />
                 )}
+                
+                {label}
               </Link>
             </li>
           );

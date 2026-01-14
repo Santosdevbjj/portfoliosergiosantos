@@ -31,12 +31,13 @@
     }
   },
   "rules": {
-    /* ⚛️ React & Next.js */
+    /* React 19 / Next 15 Optimization */
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
     "react/display-name": "off",
+    "react/jsx-no-target-blank": "warn",
 
-    /* 🧹 Gerenciamento de Código Limpo */
+    /* Clean Code: Auto-remove unused imports */
     "@typescript-eslint/no-unused-vars": "off",
     "unused-imports/no-unused-imports": "error",
     "unused-imports/no-unused-vars": [
@@ -49,7 +50,7 @@
       }
     ],
 
-    /* 📦 Organização de Imports (Engenharia de Software) */
+    /* Architecture: Import Organization */
     "import/order": [
       "warn",
       {
@@ -74,23 +75,25 @@
       }
     ],
 
-    /* 🛡️ Tipagem e Segurança */
+    /* TypeScript Strictness for Node 24 */
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/consistent-type-imports": [
       "warn",
       { "prefer": "type-imports", "fixStyle": "inline-type-imports" }
     ],
     "@typescript-eslint/no-empty-interface": "warn",
+    "@typescript-eslint/no-duplicate-enum-values": "error",
 
-    /* ♿ Acessibilidade (Crítico para SEO) */
+    /* Accessibility (WCAG 2.1 Compliance) */
     "jsx-a11y/alt-text": "error",
     "jsx-a11y/aria-props": "warn",
     "jsx-a11y/aria-proptypes": "warn",
     "jsx-a11y/aria-unsupported-elements": "warn",
     "jsx-a11y/role-has-required-aria-props": "warn",
     "jsx-a11y/role-supports-aria-props": "warn",
+    "jsx-a11y/no-static-element-interactions": "warn",
 
-    /* 📝 Logs e Depuração */
+    /* Data Integrity & Debugging */
     "no-console": ["warn", { "allow": ["warn", "error"] }]
   },
   "overrides": [
@@ -103,6 +106,11 @@
         "@typescript-eslint/no-explicit-any": "off",
         "no-console": "off"
       }
+    },
+    {
+      /* Configurações específicas para arquivos de Markdown/MDX */
+      "files": ["*.mdx"],
+      "extends": ["plugin:mdx/recommended"]
     }
   ]
 }

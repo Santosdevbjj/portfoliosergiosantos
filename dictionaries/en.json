@@ -4,7 +4,12 @@
     "description": "Data Engineer specializing in scalable architectures, ETL/ELT pipelines, and transforming data into strategic assets.",
     "viewRepository": "View Repository",
     "githubProjects": "Other GitHub Projects",
-    "noDescription": "Data engineering and analytics project focused on efficiency and scalability."
+    "noDescription": "Data engineering and analytics project focused on efficiency and scalability.",
+    "featured_article": {
+      "title": "Low-Code in Healthcare: How to Build Medical Apps in Weeks",
+      "award": "Winner of the 35th DIO Article Competition & Best Article of the Month (Sep/2025)",
+      "link": "https://medium.com/@sergiosantosluiz/low-code-in-healthcare-how-to-build-medical-apps-in-weeks-2679bf08ba77"
+    }
   },
   "categories": {
     "data-science": "Data Science",
@@ -22,14 +27,20 @@
     "html": "Web Technologies",
     "articles-repo": "Technical Articles"
   },
+  "awards": {
+    "title": "Awards & Publications",
+    "dio_winner": "DIO Article Competition Winner - 35th Edition",
+    "best_article_month": "Best Article of the Month (September 2025)",
+    "global_reach": "Multilingual Publication (PT/EN/ES)"
+  },
   "footer": {
     "rights": "All rights reserved.",
     "contact": "Get in touch",
     "builtWith": "Built with Next.js and Tailwind CSS"
   },
   "theme": {
-    "themeLight": "Light",
-    "themeDark": "Dark",
+    "themeLight": "Light Mode",
+    "themeDark": "Dark Mode",
     "themeSystem": "System"
   },
   "cta": {
@@ -41,6 +52,7 @@
     "skills": "Hard Skills",
     "experience": "Professional Experience",
     "featuredProjects": "Featured Projects",
+    "awards": "Awards & Publications",
     "testimonials": "Recommendations",
     "about": "About Me",
     "contact": "Contact"

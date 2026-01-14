@@ -18,7 +18,6 @@ export default function Navbar({ lang, dict }: Props) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  // Otimização de scroll com threshold
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -27,18 +26,29 @@ export default function Navbar({ lang, dict }: Props) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Sincroniza fechamento do menu
+  // Fecha o menu ao mudar de rota ou ao clicar em âncora
   useEffect(() => {
     setIsMobileMenuOpen(false);
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'unset';
+    }
   }, [pathname]);
 
+  // Bloqueia scroll do body quando menu mobile está aberto
+  const toggleMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+    document.body.style.overflow = !isMobileMenuOpen ? 'hidden' : 'unset';
+  };
+
   const isHomePage = pathname === `/${lang}` || pathname === `/${lang}/`;
-  const projectsHref = isHomePage ? "#featured-project" : `/${lang}#featured-project`;
+  
+  // Sincronizado com a chave 'featuredProjects' do pt.json e HeroSection
+  const projectsHref = isHomePage ? "#featuredProjects" : `/${lang}#featuredProjects`;
 
   const navLinks = [
-    { name: dict.navigation.home, href: `/${lang}`, active: isHomePage },
-    { name: dict.navigation.projects, href: projectsHref, active: false },
-    { name: dict.navigation.about, href: `/${lang}/about`, active: pathname.includes('/about') },
+    { name: dict.sections.about, href: `/${lang}`, active: isHomePage },
+    { name: dict.sections.featuredProjects, href: projectsHref, active: false },
+    { name: dict.sections.awards, href: isHomePage ? "#awards" : `/${lang}#awards`, active: false },
   ];
 
   return (
@@ -54,17 +64,15 @@ export default function Navbar({ lang, dict }: Props) {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex justify-between items-center">
           
-          {/* LOGO - Minimalista e Premium */}
           <Link href={`/${lang}`} className="relative z-10 flex flex-col group active:scale-95 transition-transform">
             <span className="text-xl font-black tracking-tighter text-slate-900 dark:text-white">
               SÉRGIO <span className="text-blue-600 transition-colors group-hover:text-blue-500">SANTOS</span>
             </span>
             <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] transition-colors group-hover:text-slate-600 dark:group-hover:text-slate-200">
-              Data Engineering
+              {dict.categories.database}
             </span>
           </Link>
 
-          {/* DESKTOP NAV - Tipografia de alta precisão */}
           <div className="hidden md:flex items-center space-x-10">
             {navLinks.map((link) => (
               <Link 
@@ -79,19 +87,16 @@ export default function Navbar({ lang, dict }: Props) {
             ))}
           </div>
 
-          {/* ACTIONS: TEMA + IDIOMA + MOBILE TOGGLE */}
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex items-center gap-4 border-r border-slate-200 dark:border-slate-800 pr-4 mr-2">
                <DarkModeToggle dict={dict.theme} />
                <LanguageSwitcher lang={lang} />
             </div>
 
-            {/* BOTÃO MOBILE - Lucide Icons */}
             <button 
               aria-expanded={isMobileMenuOpen}
-              aria-controls="mobile-menu"
               className="md:hidden p-2.5 rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 active:scale-90 transition-all"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={toggleMenu}
             >
               {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -99,17 +104,16 @@ export default function Navbar({ lang, dict }: Props) {
         </div>
       </div>
 
-      {/* MOBILE MENU - Estilo Fullscreen Overlay sutil */}
       {isMobileMenuOpen && (
         <div 
-          id="mobile-menu"
-          className="md:hidden absolute top-full left-0 w-full h-screen bg-white dark:bg-slate-950 p-6 animate-in slide-in-from-top-2 duration-300 ease-out"
+          className="md:hidden fixed inset-0 top-[72px] w-full h-[calc(100vh-72px)] bg-white dark:bg-slate-950 p-6 z-[99] overflow-y-auto animate-in fade-in zoom-in-95 duration-200"
         >
           <div className="space-y-6">
             {navLinks.map((link) => (
               <Link 
                 key={link.name}
                 href={link.href} 
+                onClick={toggleMenu}
                 className="flex items-center justify-between text-2xl font-black text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-900 pb-4"
               >
                 {link.name}
@@ -119,11 +123,15 @@ export default function Navbar({ lang, dict }: Props) {
             
             <div className="grid grid-cols-2 gap-4 pt-4">
               <div className="p-4 rounded-3xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">Tema</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">
+                   {dict.theme.themeSystem}
+                </p>
                 <DarkModeToggle dict={dict.theme} />
               </div>
               <div className="p-4 rounded-3xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">Idioma</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">
+                   {lang.toUpperCase()}
+                </p>
                 <LanguageSwitcher lang={lang} />
               </div>
             </div>

@@ -1,4 +1,5 @@
 // app/layout.tsx
+
 import { ReactNode } from "react";
 import "./globals.css"; // Importação global de estilos (Tailwind)
 

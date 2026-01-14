@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
-// Centralizando o tipo Locale para manter consistência com lib/i18n.ts
+// Força a rota a ser dinâmica, pois usamos headers e searchParams
+export const dynamic = "force-dynamic";
+
 type Locale = "en" | "pt" | "es";
 
 const messages: Record<
@@ -33,14 +35,14 @@ function detectLang(req: Request): Locale {
     return langParam as Locale;
   }
 
-  // Cabeçalho personalizado 'x-locale' (injetado via Middleware)
+  // Cabeçalho personalizado 'x-locale'
   const xLocale = req.headers.get("x-locale"); 
   if (xLocale === "pt" || xLocale === "en" || xLocale === "es") return xLocale as Locale;
 
   // Detecção via navegador (Accept-Language)
   const acceptLang = req.headers.get("accept-language")?.toLowerCase();
-  if (acceptLang?.startsWith("pt")) return "pt";
-  if (acceptLang?.startsWith("es")) return "es";
+  if (acceptLang?.includes("pt")) return "pt";
+  if (acceptLang?.includes("es")) return "es";
 
   return "en";
 }
@@ -70,12 +72,14 @@ export async function GET(req: Request) {
     return NextResponse.json(body, {
       status: 200,
       headers: {
-        // Cache configurado para 10 segundos no CDN da Vercel
-        "Cache-Control": "public, s-maxage=10, stale-while-revalidate=59",
-        "X-Content-Type-Options": "nosniff", // Segurança extra
+        // No Next 15, o cache de rotas dinâmicas é mais rigoroso
+        "Cache-Control": "no-store, max-age=0", 
+        "X-Content-Type-Options": "nosniff",
+        "Access-Control-Allow-Origin": "*", // Permite chamadas de outros domínios se necessário
       },
     });
   } catch (error) {
+    console.error("API Greeting Error:", error);
     return NextResponse.json(
       { status: "error", message: "Internal Server Error" },
       { status: 500 }

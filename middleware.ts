@@ -7,8 +7,13 @@ const locales = ["pt", "en", "es"] as const;
 const defaultLocale = "pt";
 
 function getLocale(request: NextRequest): string {
-  const cookieLocale = request.cookies.get("locale")?.value?.toLowerCase();
-  if (cookieLocale && (locales as readonly string[]).includes(cookieLocale as any)) {
+  const cookieLocale = request.cookies
+    .get("locale")
+    ?.value
+    ?.split("-")[0]
+    ?.toLowerCase();
+
+  if (cookieLocale && locales.includes(cookieLocale as any)) {
     return cookieLocale;
   }
 
@@ -19,35 +24,37 @@ function getLocale(request: NextRequest): string {
 
   try {
     const languages = new Negotiator({ headers }).languages();
-    return matchLocale(languages, [...locales], defaultLocale);
-  } catch (e) {
+    // Garante que o matcher receba um array simples de strings
+    return matchLocale(languages, Array.from(locales), defaultLocale);
+  } catch {
     return defaultLocale;
   }
 }
 
-/**
- * 📊 Envio de logs para monitoramento
- */
-async function sendLog(locale: string, pathname: string, theme: string, request: NextRequest) {
-  const token = process.env.LOGTAIL_TOKEN;
-  if (!token) return;
-  
-  // Captura IP e User-Agent para enriquecer seus dados de Analytics
+async function sendLog(
+  locale: string,
+  pathname: string,
+  theme: string,
+  request: NextRequest
+) {
+  // Apenas logs em produção e se houver token
+  if (process.env.NODE_ENV !== "production" || !process.env.LOGTAIL_TOKEN) return;
+
   const ua = request.headers.get("user-agent") || "unknown";
-  const ip = request.ip || request.headers.get("x-forwarded-for") || "127.0.0.1";
+  const ip = request.headers.get("x-real-ip") || request.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
 
   try {
-    // Usamos fetch padrão do Next.js Runtime
-    await fetch("https://in.logs.betterstack.com", { // URL atualizada do Better Stack
+    // Usamos fetch com keepalive para não segurar a requisição do usuário
+    await fetch("https://in.logs.betterstack.com", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${process.env.LOGTAIL_TOKEN}`,
       },
       body: JSON.stringify({
         dt: new Date().toISOString(),
-        message: `Page view: ${pathname}`,
-        service: "portfolio-nextjs",
+        message: `Visit: ${pathname} [${locale}]`,
+        service: "portfolio-sergio",
         level: "info",
         context: {
           locale,
@@ -55,37 +62,38 @@ async function sendLog(locale: string, pathname: string, theme: string, request:
           path: pathname,
           user_agent: ua,
           client_ip: ip,
-        }
+          runtime: "edge-middleware"
+        },
       }),
+      keepalive: true, // Importante para garantir o envio após a resposta
     });
-  } catch (error) {
-    // Fail silent para não quebrar a navegação do usuário
+  } catch (err) {
+    // Fail silent para não interromper a navegação do usuário
   }
 }
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const theme = request.cookies.get("theme")?.value ?? "system";
-
-  // 1. Ignora arquivos estáticos e internos IMEDIATAMENTE
+  
+  // 1. Ignora rapidamente arquivos estáticos e internos
   if (
     pathname.startsWith("/_next") ||
-    pathname.includes("/api/") ||
-    pathname.match(/\.(png|jpg|jpeg|svg|webp|gif|ico|pdf|txt|xml|json|webmanifest)$/)
+    pathname.startsWith("/api") ||
+    pathname.match(/\.(?:public|assets|ico|png|jpg|jpeg|svg|webp|gif|pdf|txt|xml|json|webmanifest|woff2?|ttf)$/)
   ) {
     return NextResponse.next();
   }
 
-  // 2. Verifica se o pathname já possui um locale
+  const theme = request.cookies.get("theme")?.value ?? "system";
   const pathnameHasLocale = locales.some(
-    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+    (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)
   );
 
-  // 3. Se NÃO tem locale, decide o idioma, loga e redireciona
+  // 2. Redireciona se não houver locale na URL
   if (!pathnameHasLocale) {
     const locale = getLocale(request);
     
-    // Dispara o log sem 'await' para não atrasar o carregamento (Fire-and-forget)
+    // Log assíncrono (não usamos await para não atrasar o usuário)
     sendLog(locale, pathname, theme, request).catch(() => {});
 
     return NextResponse.redirect(
@@ -96,22 +104,19 @@ export function middleware(request: NextRequest) {
     );
   }
 
-  // 4. Se JÁ TEM locale, apenas injeta os headers para os componentes
+  // 3. Injeta headers úteis para Server Components
   const currentLocale = pathname.split("/")[1] || defaultLocale;
   const requestHeaders = new Headers(request.headers);
-  
   requestHeaders.set("x-theme", theme);
   requestHeaders.set("x-locale", currentLocale);
   requestHeaders.set("x-pathname", pathname);
 
   return NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
+    request: { headers: requestHeaders },
   });
 }
 
 export const config = {
-  // Matcher refinado para excluir tudo que não for página
-  matcher: ["/((?!_next/static|_next/image|assets|favicon.ico|sw.js).*)"],
+  // Matcher otimizado para excluir o que não deve ser interceptado
+  matcher: ["/((?!api|_next/static|_next/image|assets|favicon.ico|sw.js|.*\\.).*)"],
 };

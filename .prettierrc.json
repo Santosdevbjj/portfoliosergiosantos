@@ -10,7 +10,9 @@
   "bracketSameLine": false,
   "arrowParens": "always",
   "endOfLine": "lf",
+  "embeddedLanguageFormatting": "auto",
+  "proseWrap": "always",
   "plugins": ["prettier-plugin-tailwindcss"],
   "tailwindAttributes": ["className", "class"],
-  "tailwindFunctions": ["clsx", "twMerge", "twJoin"]
+  "tailwindFunctions": ["clsx", "twMerge", "twJoin", "cn"]
 }

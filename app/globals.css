@@ -4,75 +4,82 @@
 
 @layer base {
   :root {
-    /* Altura da Navbar para âncoras de scroll não ficarem escondidas */
-    scroll-padding-top: 5rem;
+    /* Altura da Navbar para âncoras de scroll (ajustado para precisão) */
+    scroll-padding-top: 6rem;
     
-    /* Variáveis de Marca (Blue/Indigo) */
-    --brand-primary: 37 99 235;
-    --brand-secondary: 79 70 229;
+    /* Cores de Marca em HSL para manipulação de opacidade via Tailwind */
+    --brand-blue: 221 83% 53%;
+    --brand-indigo: 243 75% 59%;
   }
 
   html {
     scroll-behavior: smooth;
     color-scheme: light dark;
-    /* Melhora o rendering em telas Retina */
+    /* Previne saltos horizontais indesejados */
+    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   body {
+    /* Define o fundo imediatamente para evitar o "white flash" no Dark Mode */
     @apply bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-50;
-    @apply transition-colors duration-300;
+    @apply transition-colors duration-500;
     text-rendering: optimizeLegibility;
     line-height: 1.6;
-    overflow-x: hidden;
+    min-h-screen;
   }
 
-  /* Tipografia Fluida - Estilo Sênior */
-  h1, h2, h3 {
-    @apply tracking-tighter text-slate-900 dark:text-white;
+  /* Foco Acessível: Essencial para conformidade WCAG */
+  :focus-visible {
+    @apply outline-none ring-2 ring-blue-600 ring-offset-2 dark:ring-offset-slate-950;
   }
 
-  h1 {
-    @apply font-black;
-    font-size: clamp(2.5rem, 8vw, 5rem);
-    line-height: 0.95;
-  }
-  
-  h2 {
-    @apply font-extrabold;
-    font-size: clamp(1.8rem, 5vw, 3.2rem);
+  /* Tipografia Fluida - Foco em Senioridade e Legibilidade */
+  h1, h2, h3, h4 {
+    @apply tracking-tighter text-slate-900 dark:text-white font-black;
     line-height: 1.1;
   }
 
+  h1 {
+    font-size: clamp(2.5rem, 9vw, 5.5rem);
+    letter-spacing: -0.04em;
+  }
+  
+  h2 {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    letter-spacing: -0.03em;
+  }
+
   h3 {
-    @apply font-bold;
-    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
   }
 
   p {
-    @apply leading-relaxed text-slate-600 dark:text-slate-400;
+    @apply leading-relaxed text-slate-600 dark:text-slate-400 font-medium;
     font-size: clamp(1rem, 1.1vw, 1.125rem);
+    max-width: 75ch; /* Limita a largura para melhor leitura */
   }
 
-  /* Customização da Seleção */
+  /* Customização da Seleção - Branding */
   ::selection {
-    @apply bg-blue-500/30 text-blue-900 dark:text-blue-100;
+    @apply bg-blue-600/20 text-blue-900 dark:text-blue-100;
   }
 }
 
 @layer components {
-  /* Container Padrão do Site */
+  /* Container Principal com consistência de margens */
   .main-container {
-    @apply max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 w-full;
+    @apply max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 w-full;
   }
 
-  /* Glassmorphism Refinado */
+  /* Efeito de Vidro (Glassmorphism) para Nav e Cards */
   .glass-effect {
-    @apply bg-white/70 dark:bg-slate-950/80 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 shadow-sm;
+    @apply bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50;
+    @apply shadow-[0_8px_32px_0_rgba(0,0,0,0.05)];
   }
 
-  /* Scrollbar Moderna Estilo Mac/Mobile */
+  /* Scrollbar Estilizada - Invisível até o hover para minimalismo */
   ::-webkit-scrollbar {
     @apply w-1.5;
   }
@@ -82,37 +89,50 @@
   }
   
   ::-webkit-scrollbar-thumb {
-    @apply bg-slate-300 dark:bg-slate-800 rounded-full hover:bg-slate-400 dark:hover:bg-slate-700 transition-colors;
+    @apply bg-slate-200 dark:bg-slate-800 rounded-full transition-colors border-2 border-transparent bg-clip-content;
+  }
+  
+  *:hover::-webkit-scrollbar-thumb {
+    @apply bg-slate-400 dark:bg-slate-700;
   }
 }
 
 @layer utilities {
-  /* Gradiente de Texto para Heros e Títulos de Destaque */
+  /* Gradiente Animado - Velocidade ajustada para não distrair */
   .animate-text-gradient {
+    @apply bg-clip-text text-transparent;
     background-size: 200% auto;
-    background-clip: text;
-    -webkit-background-clip: text;
-    @apply text-transparent font-black;
-    animation: textGradient 5s ease infinite;
+    animation: textGradient 8s linear infinite;
     background-image: linear-gradient(
       to right,
       #2563eb,
       #4f46e5,
-      #06b6d4,
+      #0ea5e9,
       #2563eb
     );
   }
 
-  /* Grid de Fundo (Data Science Style) */
-  .bg-grid-slate {
-    background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
-    background-size: 32px 32px;
-    @apply text-slate-200 dark:text-slate-900;
+  /* Grade de Fundo "Blueprint" - Identidade de Engenharia */
+  .bg-grid-data {
+    background-image: 
+      linear-gradient(to right, currentColor 1px, transparent 1px),
+      linear-gradient(to bottom, currentColor 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, black 70%, transparent 100%);
+    @apply text-slate-100/50 dark:text-slate-900/40;
+  }
+
+  /* Utilitário para ocultar scrollbar mas manter funcionalidade */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
 
 @keyframes textGradient {
-  0% { background-position: 0% center; }
-  50% { background-position: 100% center; }
-  100% { background-position: 0% center; }
+  from { background-position: 0% center; }
+  to { background-position: 200% center; }
 }

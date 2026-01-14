@@ -1,70 +1,58 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Ativa o modo estrito para detectar efeitos colaterais (essencial no React 19)
   reactStrictMode: true,
 
-  /** 🛡️ Segurança e Compilação */
   compiler: {
-    // Remove consoles apenas em produção, mantendo erros para debugging no monitoramento
+    // Remove consoles em produção para privacidade e performance, mantendo erros e avisos
     removeConsole:
       process.env.NODE_ENV === "production"
         ? { exclude: ["error", "warn"] }
         : false,
   },
 
-  /** 🚀 Performance e Headers */
+  // Geração de arquivos comprimidos (gzip/brotli)
   compress: true,
-  poweredByHeader: false, 
+  
+  // Segurança: Remove o header que indica que o site usa Next.js
+  poweredByHeader: false,
 
-  /** 🖼️ Otimização de Imagens (Vital para Performance de Dados) */
   images: {
     formats: ["image/avif", "image/webp"],
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "avatars.githubusercontent.com",
-      },
-      {
-        protocol: "https",
-        hostname: "raw.githubusercontent.com",
-      },
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com", // Adicionado para capas de artigos MDX
-      },
-    ],
-    // Cache de imagens agressivo (1 ano) para melhorar LCP
+    // Cache agressivo de 1 ano para imagens externas (melhora o LCP no Core Web Vitals)
     minimumCacheTTL: 31536000,
+    remotePatterns: [
+      { protocol: "https", hostname: "avatars.githubusercontent.com" },
+      { protocol: "https", hostname: "raw.githubusercontent.com" },
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "github.com" },
+    ],
+    // Breakpoints de imagem otimizados para o seu Tailwind (xs: 480px)
     deviceSizes: [480, 640, 750, 828, 1080, 1200, 1920],
   },
 
-  /** 📝 Configuração para MDX */
-  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+  // Suporte a extensões de arquivos de conteúdo
+  pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 
-  /** 🔄 Configurações Experimentais (Next.js 15) */
-  experimental: {
-    // Melhora a velocidade de compilação de arquivos MDX e componentes pesados
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
-  },
+  // Otimização para Docker/Vercel (gera um build muito mais leve)
+  output: "standalone",
 
-  /** 🌐 Redirecionamentos */
   async redirects() {
     return [
-      // Nota: O redirecionamento de "/" para "/pt" é opcional aqui 
-      // se você já estiver tratando isso no middleware.ts. 
-      // Mantivemos para garantir a fallback física.
       {
+        // Se o usuário acessar a raiz sem idioma, mandamos para /pt
         source: "/",
         destination: "/pt",
         permanent: true,
       },
     ];
+  },
+
+  // Ajuste opcional para Next 15: desativa avisos de hidratação por causa de extensões de browser
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
   },
 };
 

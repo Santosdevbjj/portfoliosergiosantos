@@ -1,10 +1,11 @@
 // app/[lang]/layout.tsx
 import { Inter } from "next/font/google";
-import { Locale, i18n } from "@/lib/i18n";
+import { Locale, i18n, getDictionary } from "@/lib/i18n";
 import { Metadata, Viewport } from "next";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { ThemeProvider } from "@/hooks/ThemeContext";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer"; // Certifique-se de que o Footer existe
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,42 +18,27 @@ export const viewport: Viewport = {
   ],
 };
 
-// Removido o Promise para compatibilidade estável com Next 14
+// No Next.js 15, params é uma Promise
 interface Props {
   children: React.ReactNode;
-  params: { lang: Locale };
+  params: Promise<{ lang: Locale }>;
 }
 
 /**
- * SEO DINÂMICO INTERNACIONAL
+ * SEO DINÂMICO INTERNACIONAL (Next.js 15 Pattern)
  */
-export async function generateMetadata({ params }: { params: { lang: Locale } }): Promise<Metadata> {
-  const lang = params.lang;
+export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
+  const { lang } = await params;
+  const t = await getDictionary(lang);
   
-  const content = {
-    pt: {
-      title: "Sérgio Santos | Ciência de Dados e Sistemas Críticos",
-      description: "Portfólio de Engenharia de Dados, IA e análise de sistemas bancários. 15+ anos de experiência.",
-    },
-    es: {
-      title: "Sérgio Santos | Especialista en Datos y Sistemas Críticos",
-      description: "Portafolio de Ingeniería de Datos, IA y análisis de sistemas bancarios. 15+ años de experiencia.",
-    },
-    en: {
-      title: "Sérgio Santos | Data Science & Mission-Critical Systems",
-      description: "Data Engineering, AI, and banking systems portfolio. 15+ years of professional experience.",
-    }
-  };
-
-  const current = content[lang] || content.en;
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://portfoliosergiosantos.vercel.app";
 
   return {
     title: {
-      default: current.title,
+      default: t.portfolio.title,
       template: `%s | Sérgio Santos`
     },
-    description: current.description,
+    description: t.portfolio.description,
     metadataBase: new URL(baseUrl),
     alternates: {
       canonical: `${baseUrl}/${lang}`,
@@ -67,15 +53,15 @@ export async function generateMetadata({ params }: { params: { lang: Locale } })
       type: "website",
       locale: lang === "pt" ? "pt_BR" : lang === "es" ? "es_ES" : "en_US",
       url: `${baseUrl}/${lang}`,
-      title: current.title,
-      description: current.description,
+      title: t.portfolio.title,
+      description: t.portfolio.description,
       siteName: "Sérgio Santos Portfolio",
       images: [
         {
           url: `/og-image-${lang}.png`,
           width: 1200,
           height: 630,
-          alt: current.title,
+          alt: t.portfolio.title,
         },
       ],
     },
@@ -87,25 +73,33 @@ export async function generateStaticParams() {
 }
 
 /**
- * LAYOUT DE IDIOMA
+ * LAYOUT DE IDIOMA - ROOT
  */
-export default function LanguageLayout({ children, params }: Props) {
-  const lang = params.lang;
+export default async function LanguageLayout({ children, params }: Props) {
+  // No Next.js 15, aguardamos as params
+  const { lang } = await params;
+  // Buscamos o dicionário para passar para a Navbar e componentes globais
+  const dict = await getDictionary(lang);
 
   return (
-    <div className={`${inter.className} min-h-screen flex flex-col`}>
-      <ThemeProvider>
-        {/* Passamos o lang para a Navbar que deve ser um Client Component */}
-        <Navbar lang={lang} />
-        
-        <main className="flex-grow animate-in fade-in duration-700">
-          {children}
-        </main>
-        
-        {process.env.NEXT_PUBLIC_GA_ID && (
-          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
-        )}
-      </ThemeProvider>
-    </div>
+    <html lang={lang} suppressHydrationWarning>
+      <body className={`${inter.className} min-h-screen flex flex-col bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 transition-colors duration-300`}>
+        <ThemeProvider>
+          {/* Agora a Navbar recebe o dicionário revisado com as chaves corretas */}
+          <Navbar lang={lang} dict={dict} />
+          
+          <main className="flex-grow">
+            {children}
+          </main>
+
+          {/* Adicionando o Footer para consistência visual */}
+          <Footer dict={dict} />
+          
+          {process.env.NEXT_PUBLIC_GA_ID && (
+            <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+          )}
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }

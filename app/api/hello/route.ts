@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
-// Tipagem rigorosa sincronizada com o resto do projeto
+// Next.js 15: Garante que o servidor processe a lógica de idioma em tempo real
+export const dynamic = "force-dynamic";
+
 type Locale = "en" | "pt" | "es";
 
 const messages: Record<Locale, { greeting: string; description: string; footer: string }> = {
@@ -16,24 +18,25 @@ const messages: Record<Locale, { greeting: string; description: string; footer: 
   },
   es: {
     greeting: "¡Hola, bienvenido al portafolio de Sergio Santos!",
-    description: "Este endpoint de API é totalmente responsivo e multilingüe.",
-    footer: "Todos os derechos reservados."
+    description: "Este endpoint de API es totalmente responsivo y multilingüe.",
+    footer: "Todos los derechos reservados."
   }
 };
 
-/** 🌐 Detecção de Idioma Otimizada */
+/** 🌐 Detecção de Idioma Resiliente */
 function detectLang(req: Request): Locale {
   const { searchParams } = new URL(req.url);
   
+  // 1. Prioridade para parâmetro explícito (?lang=es)
   const langParam = searchParams.get("lang")?.toLowerCase();
   if (langParam === "pt" || langParam === "en" || langParam === "es") {
     return langParam as Locale;
   }
 
+  // 2. Fallback para o cabeçalho do navegador
   const acceptLang = req.headers.get("accept-language")?.toLowerCase();
-  // Alterado para startsWith para maior precisão em headers complexos
-  if (acceptLang?.startsWith("pt")) return "pt";
-  if (acceptLang?.startsWith("es")) return "es";
+  if (acceptLang?.includes("pt")) return "pt";
+  if (acceptLang?.includes("es")) return "es";
 
   return "en";
 }
@@ -49,21 +52,23 @@ export async function GET(req: Request) {
       meta: {
         timestamp: new Date().toISOString(),
         version: "1.1.0",
-        // process.uptime() em serverless indica o tempo de vida do 'warm container'
         instance_uptime: Math.floor(process.uptime()), 
-        region: process.env.VERCEL_REGION || "development"
+        region: process.env.VERCEL_REGION || "local"
       }
     };
 
     return NextResponse.json(body, {
       status: 200,
       headers: {
-        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30",
+        // Cache curto para garantir que mudanças de idioma sejam refletidas rapidamente
+        "Cache-Control": "no-store, max-age=0", 
         "Content-Type": "application/json",
-        "X-Robots-Tag": "noindex" // Impede que esse JSON apareça nos resultados de busca do Google
+        "X-Robots-Tag": "noindex", // Segurança: evita indexação desnecessária
+        "X-Content-Type-Options": "nosniff"
       },
     });
   } catch (error) {
+    console.error("API Hello Error:", error);
     return NextResponse.json(
       { status: "error", message: "Internal Server Error" },
       { status: 500 }

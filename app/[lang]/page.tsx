@@ -1,5 +1,6 @@
 // app/[lang]/page.tsx
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 import PageWrapper from "@/components/PageWrapper";
 import HeroSection from "@/components/HeroSection";
@@ -8,7 +9,7 @@ import ProjectsSection from "@/components/ProjectsSection";
 import FeaturedArticleSection from "@/components/FeaturedArticleSection";
 import AboutSection from "@/components/AboutSection";
 
-import { getDictionary } from "@/lib/i18n";
+import { getDictionary, i18n, type Locale } from "@/lib/i18n";
 import {
   getPortfolioRepos,
   CATEGORIES_ORDER,
@@ -21,28 +22,51 @@ import {
 export const revalidate = 3600;
 
 interface Props {
-  params: { lang: "pt" | "en" | "es" };
+  params: Promise<{ lang: Locale }>;
 }
 
 /**
- * SEO específico da página inicial por idioma
+ * SEO específico da Home por idioma
  */
 export async function generateMetadata(
   { params }: Props
 ): Promise<Metadata> {
-  const { lang } = params;
+  const { lang } = await params;
+
+  if (!i18n.locales.includes(lang)) {
+    return {};
+  }
+
   const t = await getDictionary(lang);
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "https://portfoliosergiosantos.vercel.app";
 
   return {
     title: `${t.portfolio.title} | Data Science & Analytics`,
     description: t.portfolio.description,
+    metadataBase: new URL(baseUrl),
+    alternates: {
+      canonical: `${baseUrl}/${lang}`,
+      languages: {
+        pt: `${baseUrl}/pt`,
+        en: `${baseUrl}/en`,
+        es: `${baseUrl}/es`,
+        "x-default": `${baseUrl}/en`,
+      },
+    },
     openGraph: {
       type: "website",
-      locale:
-        lang === "pt" ? "pt_BR" : lang === "es" ? "es_ES" : "en_US",
+      locale: lang === "pt" ? "pt_BR" : lang === "es" ? "es_ES" : "en_US",
       title: `${t.portfolio.title} | Data Science & Analytics`,
       description: t.portfolio.description,
-      images: [`/og-image-${lang}.png`],
+      images: [
+        {
+          url: `/og-image-${lang}.png`,
+          width: 1200,
+          height: 630,
+        },
+      ],
     },
   };
 }
@@ -51,15 +75,20 @@ export async function generateMetadata(
  * Página principal do portfólio (Home)
  */
 export default async function Page({ params }: Props) {
-  const { lang } = params;
+  const { lang } = await params;
+
+  if (!i18n.locales.includes(lang)) {
+    notFound();
+  }
+
   const t = await getDictionary(lang);
 
   let repos: Record<string, GitHubRepo[]> = {};
 
   try {
     repos = await getPortfolioRepos();
-  } catch (error) {
-    console.error("GitHub API Error:", error);
+  } catch {
+    repos = {};
   }
 
   const hasProjects = Object.values(repos).some(
@@ -68,7 +97,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <PageWrapper lang={lang}>
-      {/* HERO — identidade e CTA */}
+      {/* HERO */}
       <HeroSection dict={t} lang={lang} />
 
       <main role="main" className="space-y-24 md:space-y-32 pb-20">
@@ -135,8 +164,7 @@ export default async function Page({ params }: Props) {
               {CATEGORIES_ORDER.map((key) => {
                 const projects = repos[key];
                 const title =
-                  t.categories[key as keyof typeof t.categories] ||
-                  key;
+                  t.categories[key as keyof typeof t.categories] || key;
 
                 if (!projects || projects.length === 0) return null;
 

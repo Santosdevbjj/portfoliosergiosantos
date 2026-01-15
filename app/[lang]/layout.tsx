@@ -1,9 +1,10 @@
 // app/[lang]/layout.tsx
 import type { ReactNode } from "react";
 import type { Metadata, Viewport } from "next";
+import { notFound } from "next/navigation";
 import { GoogleAnalytics } from "@next/third-parties/google";
 
-import { Locale, i18n, getDictionary } from "@/lib/i18n";
+import { i18n, type Locale, getDictionary } from "@/lib/i18n";
 import { ThemeProvider } from "@/hooks/ThemeContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -23,16 +24,18 @@ interface Props {
 }
 
 /**
- * SEO DINÂMICO INTERNACIONAL
+ * SEO DINÂMICO INTERNACIONAL — Layout por idioma
  */
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ lang: Locale }>;
-}): Promise<Metadata> {
+export async function generateMetadata(
+  { params }: { params: Promise<{ lang: Locale }> }
+): Promise<Metadata> {
   const { lang } = await params;
-  const t = await getDictionary(lang);
 
+  if (!i18n.locales.includes(lang)) {
+    return {};
+  }
+
+  const t = await getDictionary(lang);
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL ??
     "https://portfoliosergiosantos.vercel.app";
@@ -47,9 +50,9 @@ export async function generateMetadata({
     alternates: {
       canonical: `${baseUrl}/${lang}`,
       languages: {
-        "pt-BR": `${baseUrl}/pt`,
-        "en-US": `${baseUrl}/en`,
-        "es-ES": `${baseUrl}/es`,
+        pt: `${baseUrl}/pt`,
+        en: `${baseUrl}/en`,
+        es: `${baseUrl}/es`,
         "x-default": `${baseUrl}/en`,
       },
     },
@@ -77,18 +80,19 @@ export async function generateMetadata({
   };
 }
 
-export async function generateStaticParams() {
-  return i18n.locales.map((locale) => ({ lang: locale }));
-}
-
 /**
- * LAYOUT POR IDIOMA (SEM HTML/BODY)
+ * Layout por idioma (sem <html> e <body>)
  */
 export default async function LanguageLayout({
   children,
   params,
 }: Props) {
   const { lang } = await params;
+
+  if (!i18n.locales.includes(lang)) {
+    notFound();
+  }
+
   const dict = await getDictionary(lang);
 
   return (

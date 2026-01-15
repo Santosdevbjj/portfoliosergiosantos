@@ -1,13 +1,12 @@
 // app/[lang]/layout.tsx
-import { Inter } from "next/font/google";
-import { Locale, i18n, getDictionary } from "@/lib/i18n";
-import { Metadata, Viewport } from "next";
+import type { ReactNode } from "react";
+import type { Metadata, Viewport } from "next";
 import { GoogleAnalytics } from "@next/third-parties/google";
+
+import { Locale, i18n, getDictionary } from "@/lib/i18n";
 import { ThemeProvider } from "@/hooks/ThemeContext";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer"; // Certifique-se de que o Footer existe
-
-const inter = Inter({ subsets: ["latin"] });
+import Footer from "@/components/Footer";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -18,25 +17,30 @@ export const viewport: Viewport = {
   ],
 };
 
-// No Next.js 15, params é uma Promise
 interface Props {
-  children: React.ReactNode;
+  children: ReactNode;
   params: Promise<{ lang: Locale }>;
 }
 
 /**
- * SEO DINÂMICO INTERNACIONAL (Next.js 15 Pattern)
+ * SEO DINÂMICO INTERNACIONAL
  */
-export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: Locale }>;
+}): Promise<Metadata> {
   const { lang } = await params;
   const t = await getDictionary(lang);
-  
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://portfoliosergiosantos.vercel.app";
+
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    "https://portfoliosergiosantos.vercel.app";
 
   return {
     title: {
       default: t.portfolio.title,
-      template: `%s | Sérgio Santos`
+      template: `%s | Sérgio Santos`,
     },
     description: t.portfolio.description,
     metadataBase: new URL(baseUrl),
@@ -51,7 +55,12 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
     },
     openGraph: {
       type: "website",
-      locale: lang === "pt" ? "pt_BR" : lang === "es" ? "es_ES" : "en_US",
+      locale:
+        lang === "pt"
+          ? "pt_BR"
+          : lang === "es"
+          ? "es_ES"
+          : "en_US",
       url: `${baseUrl}/${lang}`,
       title: t.portfolio.title,
       description: t.portfolio.description,
@@ -73,33 +82,30 @@ export async function generateStaticParams() {
 }
 
 /**
- * LAYOUT DE IDIOMA - ROOT
+ * LAYOUT POR IDIOMA (SEM HTML/BODY)
  */
-export default async function LanguageLayout({ children, params }: Props) {
-  // No Next.js 15, aguardamos as params
+export default async function LanguageLayout({
+  children,
+  params,
+}: Props) {
   const { lang } = await params;
-  // Buscamos o dicionário para passar para a Navbar e componentes globais
   const dict = await getDictionary(lang);
 
   return (
-    <html lang={lang} suppressHydrationWarning>
-      <body className={`${inter.className} min-h-screen flex flex-col bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 transition-colors duration-300`}>
-        <ThemeProvider>
-          {/* Agora a Navbar recebe o dicionário revisado com as chaves corretas */}
-          <Navbar lang={lang} dict={dict} />
-          
-          <main className="flex-grow">
-            {children}
-          </main>
+    <ThemeProvider>
+      <div className="min-h-screen flex flex-col bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-50 transition-colors duration-300">
+        <Navbar lang={lang} dict={dict} />
 
-          {/* Adicionando o Footer para consistência visual */}
-          <Footer dict={dict} />
-          
-          {process.env.NEXT_PUBLIC_GA_ID && (
-            <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
-          )}
-        </ThemeProvider>
-      </body>
-    </html>
+        <main className="flex-grow">
+          {children}
+        </main>
+
+        <Footer dict={dict} />
+
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        )}
+      </div>
+    </ThemeProvider>
   );
 }

@@ -1,39 +1,50 @@
 import { MetadataRoute } from "next";
 
 /**
- * 🗺️ Gerador de Sitemap Dinâmico (i18n)
- * Essencial para que motores de busca indexem corretamente as versões PT, EN e ES.
+ * 🗺️ Sitemap dinâmico com suporte a i18n
+ * Garante indexação correta das versões PT, EN e ES.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://portfoliosergiosantos.vercel.app";
-  const locales = ["pt", "en", "es"];
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "https://portfoliosergiosantos.vercel.app";
+
+  const isPreview =
+    process.env.VERCEL_ENV === "preview" ||
+    process.env.NODE_ENV !== "production";
+
+  // 🔒 Não gerar sitemap em ambientes de preview/dev
+  if (isPreview) {
+    return [];
+  }
+
+  const locales: Array<"pt" | "en" | "es"> = ["pt", "en", "es"];
   const now = new Date();
 
-  // Rotas fundamentais do seu ecossistema
+  // Rotas principais do site
   const routes = ["", "/about", "/projects", "/contact"];
 
-  return routes.flatMap((route) => {
-    return locales.map((lang) => {
-      const isDefault = lang === "pt";
+  return routes.flatMap((route) =>
+    locales.map((lang) => {
       const path = route === "" ? "" : route;
       const url = `${baseUrl}/${lang}${path}`;
 
       return {
         url,
         lastModified: now,
-        changeFrequency: (route === "/projects" ? "weekly" : "monthly") as any,
+        changeFrequency: route === "/projects" ? "weekly" : "monthly",
         priority: route === "" ? 1.0 : 0.8,
-        // 🌐 Alternates: Informa ao Google a relação entre os idiomas
-        // Isso evita punições por "conteúdo duplicado" entre as versões traduzidas
+
+        // 🌐 Relação entre idiomas (SEO multilíngue)
         alternates: {
           languages: {
             pt: `${baseUrl}/pt${path}`,
             en: `${baseUrl}/en${path}`,
             es: `${baseUrl}/es${path}`,
-            "x-default": `${baseUrl}/pt${path}`, // Define PT como padrão global
+            "x-default": `${baseUrl}/pt${path}`,
           },
         },
       };
-    });
-  });
+    })
+  );
 }

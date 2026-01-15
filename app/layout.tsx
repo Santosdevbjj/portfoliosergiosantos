@@ -17,13 +17,13 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="pt"
       suppressHydrationWarning
       className={inter.variable}
     >
-      <head />
-
-      {/* Script crítico para definir o tema ANTES da renderização */}
+      {/* 
+        Script crítico para definir o tema ANTES da renderização.
+        Não depende de idioma e evita FOUC.
+      */}
       <Script
         id="theme-init"
         strategy="beforeInteractive"
@@ -42,7 +42,7 @@ export default function RootLayout({
                   document.documentElement.classList.remove('dark');
                   document.documentElement.style.colorScheme = 'light';
                 }
-              } catch (e) {}
+              } catch (_) {}
             })();
           `,
         }}

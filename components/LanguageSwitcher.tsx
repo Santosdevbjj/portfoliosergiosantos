@@ -2,71 +2,112 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Locale } from "@/lib/i18n";
+import { useEffect, useState } from "react";
+import type { Locale } from "@/lib/i18n";
 import { Globe } from "lucide-react";
 
 interface LanguageSwitcherProps {
   lang: Locale;
 }
 
+const LANGUAGES: { code: Locale; label: string; aria: string }[] = [
+  { code: "pt", label: "PT", aria: "Mudar idioma para Português" },
+  { code: "en", label: "EN", aria: "Change language to English" },
+  { code: "es", label: "ES", aria: "Cambiar idioma a Español" },
+];
+
 export default function LanguageSwitcher({ lang }: LanguageSwitcherProps) {
   const pathname = usePathname();
+  const [hash, setHash] = useState("");
 
-  const languages = [
-    { code: "pt", label: "PT" },
-    { code: "en", label: "EN" },
-    { code: "es", label: "ES" },
-  ] as const;
+  // Preserva âncoras (#section) ao trocar idioma
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setHash(window.location.hash || "");
+    }
+  }, []);
 
-  // Lógica de transformação de URL robusta
-  const getTransformedPathname = (newLocale: string) => {
-    if (!pathname) return `/${newLocale}`;
-    
+  const getTransformedPathname = (newLocale: Locale) => {
+    if (!pathname) return `/${newLocale}${hash}`;
+
     const segments = pathname.split("/").filter(Boolean);
-    const locales: string[] = ["pt", "en", "es"];
-    
-    // Se o primeiro segmento for um locale, substitui. Se não, adiciona na frente.
-    if (locales.includes(segments[0])) {
+    const locales: Locale[] = ["pt", "en", "es"];
+
+    if (locales.includes(segments[0] as Locale)) {
       segments[0] = newLocale;
     } else {
       segments.unshift(newLocale);
     }
-    
-    return `/${segments.join("/")}`;
+
+    return `/${segments.join("/")}${hash}`;
   };
 
   return (
-    <nav 
-      aria-label="Language selector" 
-      className="relative flex items-center gap-1 p-1 bg-slate-100/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-inner"
+    <nav
+      aria-label="Language selector"
+      role="tablist"
+      className="
+        relative flex items-center gap-1 p-1
+        rounded-2xl border
+        bg-slate-100/60 dark:bg-slate-900/60
+        border-slate-200/60 dark:border-slate-800/60
+        backdrop-blur-xl shadow-inner
+      "
     >
-      <div className="flex items-center px-2 text-slate-400 dark:text-slate-500 border-r border-slate-200 dark:border-slate-800 mr-1">
-        <Globe size={14} strokeWidth={2.5} className="animate-in fade-in duration-500" />
+      {/* Ícone */}
+      <div
+        className="
+          flex items-center px-2 mr-1
+          text-slate-400 dark:text-slate-500
+          border-r border-slate-200 dark:border-slate-800
+        "
+        aria-hidden="true"
+      >
+        <Globe size={14} strokeWidth={2.5} />
       </div>
 
-      <ul className="flex items-center gap-1 relative z-10">
-        {languages.map(({ code, label }) => {
+      {/* Idiomas */}
+      <ul className="flex items-center gap-1">
+        {LANGUAGES.map(({ code, label, aria }) => {
           const isActive = lang === code;
 
           return (
-            <li key={code}>
+            <li key={code} role="presentation">
               <Link
                 href={getTransformedPathname(code)}
                 scroll={false}
-                aria-current={isActive ? "page" : undefined}
+                role="tab"
+                aria-label={aria}
+                aria-current={isActive ? "true" : undefined}
+                aria-pressed={isActive}
                 className={`
-                  relative flex items-center justify-center min-w-[36px] h-8 rounded-xl text-[10px] font-black tracking-tighter transition-all duration-500 ease-out
-                  ${isActive 
-                    ? "text-blue-600 dark:text-blue-400" 
-                    : "text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
+                  relative flex items-center justify-center
+                  min-w-[44px] h-9
+                  rounded-xl text-[10px]
+                  font-black tracking-tight
+                  transition-all duration-300
+                  focus-visible:outline-none
+                  focus-visible:ring-2 focus-visible:ring-blue-500
+                  ${
+                    isActive
+                      ? "text-blue-600 dark:text-blue-400"
+                      : "text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
                   }
                 `}
               >
-                {/* Background da pílula ativa */}
+                {/* Fundo ativo */}
                 {isActive && (
-                  <div className="absolute inset-0 bg-white dark:bg-slate-800 rounded-xl shadow-sm ring-1 ring-slate-200/50 dark:ring-slate-700/50 animate-in zoom-in-95 duration-300 -z-10" />
+                  <span
+                    className="
+                      absolute inset-0 -z-10
+                      rounded-xl bg-white dark:bg-slate-800
+                      ring-1 ring-slate-200/50 dark:ring-slate-700/50
+                      shadow-sm
+                      animate-in zoom-in-95 duration-200
+                    "
+                  />
                 )}
-                
+
                 {label}
               </Link>
             </li>
